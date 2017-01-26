@@ -3,6 +3,7 @@ package io.github.shredktp.trainschedulesrt.srt_api;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
@@ -13,4 +14,7 @@ public interface SrtApi {
     @FormUrlEncoded
     @POST("checktime.asp")
     Call<String> getSchedule(@Field("StationFirst") String stationFirst, @Field("StationLast") String stationLast);
+
+    @GET("checktime.asp")
+    Call<String> getStation();
 }
