@@ -1,0 +1,109 @@
+package io.github.shredktp.trainschedulesrt.data;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.util.ArrayList;
+
+import io.github.shredktp.trainschedulesrt.model.Station;
+
+/**
+ * Created by Korshreddern on 28-Jan-17.
+ */
+
+public class StationDataSourceImpl implements StationDataSource {
+    private static final String TAG = "StationDSrc";
+    private Context context;
+//    private static AuthSuccessDataSource authSuccessDataSource = null;
+
+
+    public StationDataSourceImpl(Context context) {
+        this.context = context;
+    }
+
+    @Override
+    public long addStation(String name) {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Station.Column.NAME, name);
+        contentValues.put(Station.Column.LINE, "");
+        long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
+    public long addStation(String name, String line) {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Station.Column.NAME, name);
+        contentValues.put(Station.Column.LINE, line);
+        long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
+    public long addStation(ArrayList<Station> stationArrayList) {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        long result = 0;
+        for (int i = 0; i < stationArrayList.size(); i++) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Station.Column.NAME, stationArrayList.get(i).getName());
+            contentValues.put(Station.Column.LINE, stationArrayList.get(i).getLine());
+            result += sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+        }
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
+    public ArrayList<Station> getAllStation() {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+
+        ArrayList<Station> stationArrayList = new ArrayList<>();
+
+        String queryStation = String.format("SELECT * FROM %s",
+                Station.STATION_TABLE_NAME);
+
+        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        cursor.moveToFirst();
+
+        if (cursor.getCount() == 0) {
+            Log.w(TAG, "getAllStation: No item in Station Table");
+        }
+
+        while (!cursor.isAfterLast()) {
+            stationArrayList.add(new Station(cursor.getString(cursor.getColumnIndex(Station.Column.NAME)), cursor.getString(cursor.getColumnIndex(Station.Column.LINE))));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        sqLiteDatabase.close();
+
+        return stationArrayList;
+    }
+
+    @Override
+    public Station getStation(String name) {
+        return null;
+    }
+
+    @Override
+    public Station getStation(String name, String line) {
+        return null;
+    }
+}

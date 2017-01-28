@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray"
-    tools:context="io.github.shredktp.trainschedulesrt.ScheduleResultWebViewFragment">
+    tools:context="io.github.shredktp.trainschedulesrt.unused.ScheduleResultWebViewFragment">
 
     <WebView
         android:id="@+id/web_view_schedule_result"

@@ -15,6 +15,9 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.data.StationDataSource;
+import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
+import io.github.shredktp.trainschedulesrt.model.Station;
 import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.srt_api.SrtApi;
 import io.github.shredktp.trainschedulesrt.srt_api.ToStringConverterFactory;
@@ -23,7 +26,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity {
+import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
@@ -41,12 +46,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupView();
-        queryStation();
-
-//        setupWebViewFragment();
+        stationApiRequester();
     }
 
-    private void queryStation() {
+    private void stationApiRequester() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_SRT_CHECK_TIME)
                 .addConverterFactory(new ToStringConverterFactory())
@@ -62,51 +65,18 @@ public class MainActivity extends AppCompatActivity {
                     String result = response.body();
                     stationParser(result);
                 } else {
-                    Log.d(TAG, "onResponse not successful: " + response.body());
+                    Log.d(TAG, "stationApiRequester onResponse not successful: " + response.body());
                     Log.d(TAG, "onResponse not successful: " + response.errorBody());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
+                Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + t.getStackTrace());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-                Log.d(TAG, "onFailure: " + call.request().body().contentType());
-                Log.d(TAG, "onFailure: " + call.request().body().toString());
-                tvDetail.setText(t.getMessage());
-            }
-        });
-    }
-
-    private void setupApiCaller(String startStation, String endStation) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_SRT_CHECK_TIME)
-                .addConverterFactory(new ToStringConverterFactory())
-                .build();
-
-        SrtApi srtApi = retrofit.create(SrtApi.class);
-        Call<String> trainScheduleBodyCall = srtApi.getSchedule(startStation, endStation);
-
-        trainScheduleBodyCall.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    String result = response.body();
-                    responseParser(result);
-                } else {
-                    Log.d(TAG, "onResponse not successful: " + response.body());
-                    Log.d(TAG, "onResponse not successful: " + response.errorBody());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
-                Log.d(TAG, "onFailure: " + t.getStackTrace());
-                Log.d(TAG, "onFailure: " + call.request().toString());
-                Log.d(TAG, "onFailure: " + call.request().body().contentType());
-                Log.d(TAG, "onFailure: " + call.request().body().toString());
+//                Log.d(TAG, "onFailure: " + call.request().body().contentType());
+//                Log.d(TAG, "onFailure: " + call.request().body().toString());
                 tvDetail.setText(t.getMessage());
             }
         });
@@ -122,17 +92,72 @@ public class MainActivity extends AppCompatActivity {
         Elements optionElements = tr.getElementsByTag("option");
 //
 //        ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
-        String result = "";
+//        String result = "";
+        ArrayList<Station> stationArrayList = new ArrayList<>();
+        int index = 0;
         for (Element option: optionElements) {
             String optionValue = option.attr("value");
             String optionDisplay = option.text();
-            result += optionValue + " " + optionDisplay + "\n";
+//            result += optionValue + " " + optionDisplay + "\n";
+            stationArrayList.add(new Station(optionValue));
         }
-        tvStation.setText(result);
-        Log.d(TAG, "stationParser: " + result);
+//        tvStation.setText(result);
+//        Log.d(TAG, "stationParser: " + result);
+
+        addStation(stationArrayList);
+        setTextFromDb();
     }
 
-    private void responseParser(String html) {
+    private void setTextFromDb() {
+        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+        ArrayList<Station> stationArrayList = stationDataSource.getAllStation();
+
+        String result = "";
+        for (int i = 0; i < stationArrayList.size(); i++) {
+            result += "Name: " + stationArrayList.get(i).getName() + "\n";
+        }
+        tvStation.setText(result);
+    }
+
+    private void addStation(ArrayList<Station> stationArrayList) {
+        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+        stationDataSource.addStation(stationArrayList);
+    }
+
+    private void trainScheduleApiRequester(String startStation, String endStation) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL_SRT_CHECK_TIME)
+                .addConverterFactory(new ToStringConverterFactory())
+                .build();
+
+        SrtApi srtApi = retrofit.create(SrtApi.class);
+        Call<String> trainScheduleBodyCall = srtApi.getSchedule(startStation, endStation);
+
+        trainScheduleBodyCall.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    String result = response.body();
+                    trainScheduleParser(result);
+                } else {
+                    Log.d(TAG, "onResponse not successful: " + response.body());
+                    Log.d(TAG, "onResponse not successful: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
+                Log.d(TAG, "onFailure: " + t.getStackTrace());
+                Log.d(TAG, "onFailure: " + call.request().toString());
+//                Log.d(TAG, "onFailure: " + call.request().body().contentType());
+//                Log.d(TAG, "onFailure: " + call.request().body().toString());
+                tvDetail.setText(t.getMessage());
+            }
+        });
+    }
+
+    private void trainScheduleParser(String html) {
         if (html.contains("ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก")) {
             tvDetail.setText("ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก");
             return;
@@ -156,14 +181,14 @@ public class MainActivity extends AppCompatActivity {
 
         String result = "";
         for (int i = 0; i < trainScheduleArrayList.size(); i++) {
-//            Log.d(TAG, "responseParser: " + trainScheduleArrayList.get(i).toString());
-            result += "รถออก: " + trainScheduleArrayList.get(i).getLeaveTime() + "\n";
+//            Log.d(TAG, "trainScheduleParser: " + trainScheduleArrayList.get(i).toString());
+            result += "รถออก: " + trainScheduleArrayList.get(i).getStartTime() + "\n";
         }
         tvDetail.setText(result);
     }
 
     private void setupView() {
-        btnGo = (Button) findViewById(R.id.btn_go);
+        btnGo = (Button) findViewById(btn_go);
         edtStart = (EditText) findViewById(R.id.edt_start);
         edtEnd = (EditText) findViewById(R.id.edt_end);
         tvDetail = (TextView) findViewById(R.id.tv_detail);
@@ -172,11 +197,16 @@ public class MainActivity extends AppCompatActivity {
         edtStart.setText("กรุงเทพ");
         edtEnd.setText("อยุธยา");
 
-        btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setupApiCaller(edtStart.getText().toString(), edtEnd.getText().toString());
+        btnGo.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case btn_go: {
+                trainScheduleApiRequester(edtStart.getText().toString(), edtEnd.getText().toString());
+                break;
             }
-        });
+        }
     }
 }
