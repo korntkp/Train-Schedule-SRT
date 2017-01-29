@@ -2,7 +2,6 @@ package io.github.shredktp.trainschedulesrt;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,8 +16,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-import io.github.shredktp.trainschedulesrt.data.StationDataSource;
-import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
+import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationTask;
 import io.github.shredktp.trainschedulesrt.model.Station;
 import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.srt_api.SrtApi;
@@ -31,6 +29,10 @@ import retrofit2.Retrofit;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_end;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_start;
+import static io.github.shredktp.trainschedulesrt.SearchStationActivity.EXTRA_KEY_REQUEST_CODE;
+import static io.github.shredktp.trainschedulesrt.SearchStationActivity.INTENT_EXTRA_KEY_STATION;
+import static io.github.shredktp.trainschedulesrt.SearchStationActivity.REQUEST_CODE_END_STATION;
+import static io.github.shredktp.trainschedulesrt.SearchStationActivity.REQUEST_CODE_START_STATION;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
-                Log.d(TAG, "onFailure: " + t.getStackTrace());
                 Log.d(TAG, "onFailure: " + call.request().toString());
 //                Log.d(TAG, "onFailure: " + call.request().body().contentType());
 //                Log.d(TAG, "onFailure: " + call.request().body().toString());
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addStation(ArrayList<Station> stationArrayList) {
-        new LoadViewTask().execute(stationArrayList);
+        new UpdateStationTask(getApplicationContext()).execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {
@@ -155,10 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
-                Log.d(TAG, "onFailure: " + t.getStackTrace());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-//                Log.d(TAG, "onFailure: " + call.request().body().contentType());
-//                Log.d(TAG, "onFailure: " + call.request().body().toString());
                 tvDetail.setText(t.getMessage());
             }
         });
@@ -198,8 +196,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnGo = (Button) findViewById(btn_go);
         btnStart = (Button) findViewById(btn_start);
         btnEnd = (Button) findViewById(btn_end);
-//        edtStart = (EditText) findViewById(R.id.edt_start);
-//        edtEnd = (EditText) findViewById(R.id.edt_end);
         tvDetail = (TextView) findViewById(R.id.tv_detail);
         tvStation = (TextView) findViewById(R.id.tv_station);
 
@@ -220,14 +216,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case btn_start: {
                 Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
-                intent.putExtra("req", 12794);
-                startActivityForResult(intent, 12794);
+                intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_START_STATION);
+                startActivityForResult(intent, REQUEST_CODE_START_STATION);
                 break;
             }
             case btn_end: {
                 Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
-                intent.putExtra("req", 12795);
-                startActivityForResult(intent, 12795);
+                intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_END_STATION);
+                startActivityForResult(intent, REQUEST_CODE_END_STATION);
                 break;
             }
         }
@@ -235,26 +231,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 12794) {
+        if (requestCode == REQUEST_CODE_START_STATION) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("station");
+                String result = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnStart.setText(result);
             }
-        } else if (requestCode == 12795) {
+        } else if (requestCode == REQUEST_CODE_END_STATION) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("station");
+                String result = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnEnd.setText(result);
             }
-        }
-    }//onActivityResult
-
-    private class LoadViewTask extends AsyncTask<ArrayList<Station>, Void, Void> {
-
-        @Override
-        protected Void doInBackground(ArrayList<Station>... arrayLists) {
-            StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-            stationDataSource.addStation(arrayLists[0]);
-            return null;
         }
     }
 }
