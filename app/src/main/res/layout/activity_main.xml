@@ -16,26 +16,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/edt_start"
+        <Button
+            android:id="@+id/btn_start"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="3"
-            android:hint="Start" />
+            android:text="Start" />
 
-        <EditText
-            android:id="@+id/edt_end"
+        <Button
+            android:id="@+id/btn_end"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="3"
-            android:hint="End" />
+            android:text="End" />
 
         <Button
             android:id="@+id/btn_go"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="12dp"
             android:layout_weight="2"
-            android:text="Go" />
+            android:text="See Schdule" />
     </LinearLayout>
 
     <ScrollView
@@ -47,7 +51,7 @@
             android:id="@+id/tv_station"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!" />
+            android:text="Station Name" />
     </ScrollView>
 
     <ScrollView
@@ -60,7 +64,7 @@
             android:id="@+id/tv_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!" />
+            android:text="Train Schedule" />
     </ScrollView>
 
 

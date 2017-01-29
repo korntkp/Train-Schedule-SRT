@@ -1,11 +1,13 @@
 package io.github.shredktp.trainschedulesrt;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import org.jsoup.Jsoup;
@@ -26,7 +28,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static io.github.shredktp.trainschedulesrt.R.id.btn_end;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
+import static io.github.shredktp.trainschedulesrt.R.id.btn_start;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -34,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
 
     Button btnGo;
-    EditText edtStart, edtEnd;
+    Button btnStart, btnEnd;
+//    EditText edtStart, edtEnd;
 
     TextView tvDetail;
     TextView tvStation;
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "trainScheduleBodyCall onResponse: isSuccessful");
                     String result = response.body();
                     stationParser(result);
                 } else {
@@ -84,34 +90,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void stationParser(String html) {
 //        Log.d(TAG, "stationParser: " + html);
+        Log.d(TAG, "stationParser: starting parse");
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(0);
         Element table = divMainContent.select("table").get(2);
         Element tr = table.child(0);
         Elements optionElements = tr.getElementsByTag("option");
-//
-//        ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
-//        String result = "";
+
         ArrayList<Station> stationArrayList = new ArrayList<>();
-        int index = 0;
-        for (Element option: optionElements) {
+        for (Element option : optionElements) {
             String optionValue = option.attr("value");
-            String optionDisplay = option.text();
-//            result += optionValue + " " + optionDisplay + "\n";
+//            String optionDisplay = option.text();
             stationArrayList.add(new Station(optionValue));
         }
-//        tvStation.setText(result);
-//        Log.d(TAG, "stationParser: " + result);
 
+        Log.d(TAG, "stationParser: starting setText");
+        setStationToTextview(stationArrayList);
+
+        Log.d(TAG, "stationParser: starting add to db");
         addStation(stationArrayList);
-        setTextFromDb();
     }
 
-    private void setTextFromDb() {
-        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-        ArrayList<Station> stationArrayList = stationDataSource.getAllStation();
+//    private void setTextFromDb() {
+//        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+//        ArrayList<Station> stationArrayList = stationDataSource.getAllStation();
+//
+//        setStationToTextview(stationArrayList);
+//    }
 
+    private void setStationToTextview(ArrayList<Station> stationArrayList) {
         String result = "";
         for (int i = 0; i < stationArrayList.size(); i++) {
             result += "Name: " + stationArrayList.get(i).getName() + "\n";
@@ -120,8 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addStation(ArrayList<Station> stationArrayList) {
-        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-        stationDataSource.addStation(stationArrayList);
+        new LoadViewTask().execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {
@@ -171,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Elements trElements = tbody.getElementsByTag("tr");
 
         ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
-        for (Element tr: trElements) {
+        for (Element tr : trElements) {
             Element trainNum = tr.select("div").get(1);
             Element trainType = tr.select("div").get(2);
             Element leaveTime = tr.select("div").get(3);
@@ -189,24 +196,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupView() {
         btnGo = (Button) findViewById(btn_go);
-        edtStart = (EditText) findViewById(R.id.edt_start);
-        edtEnd = (EditText) findViewById(R.id.edt_end);
+        btnStart = (Button) findViewById(btn_start);
+        btnEnd = (Button) findViewById(btn_end);
+//        edtStart = (EditText) findViewById(R.id.edt_start);
+//        edtEnd = (EditText) findViewById(R.id.edt_end);
         tvDetail = (TextView) findViewById(R.id.tv_detail);
         tvStation = (TextView) findViewById(R.id.tv_station);
 
-        edtStart.setText("กรุงเทพ");
-        edtEnd.setText("อยุธยา");
+//        btnStart.setText("กรุงเทพ");
+//        btnEnd.setText("อยุธยา");
 
         btnGo.setOnClickListener(this);
+        btnStart.setOnClickListener(this);
+        btnEnd.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case btn_go: {
-                trainScheduleApiRequester(edtStart.getText().toString(), edtEnd.getText().toString());
+                trainScheduleApiRequester(btnStart.getText().toString(), btnEnd.getText().toString());
                 break;
             }
+            case btn_start: {
+                Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
+                intent.putExtra("req", 12794);
+                startActivityForResult(intent, 12794);
+                break;
+            }
+            case btn_end: {
+                Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
+                intent.putExtra("req", 12795);
+                startActivityForResult(intent, 12795);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 12794) {
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("station");
+                btnStart.setText(result);
+            }
+        } else if (requestCode == 12795) {
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("station");
+                btnEnd.setText(result);
+            }
+        }
+    }//onActivityResult
+
+    private class LoadViewTask extends AsyncTask<ArrayList<Station>, Void, Void> {
+
+        @Override
+        protected Void doInBackground(ArrayList<Station>... arrayLists) {
+            StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+            stationDataSource.addStation(arrayLists[0]);
+            return null;
         }
     }
 }
