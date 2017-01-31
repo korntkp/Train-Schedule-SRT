@@ -73,6 +73,26 @@ public class StationDataSourceImpl implements StationDataSource {
     }
 
     @Override
+    public long addStation(Station[] station) {
+        DbHelper dbHelper = new DbHelper(context);
+//        Log.d(TAG, "addStation: after dbhelper");
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+//        Log.d(TAG, "addStation: after getWrite" + stationArrayList.size());
+        long result = 0;
+        for (Station aStation : station) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Station.Column.NAME, aStation.getName());
+            contentValues.put(Station.Column.LINE, aStation.getLine());
+            result += sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+//            sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+        }
+//        Log.d(TAG, "addStation: after insert: " + result);
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
     public ArrayList<Station> getAllStation() {
         DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();

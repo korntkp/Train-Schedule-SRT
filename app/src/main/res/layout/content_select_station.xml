@@ -11,13 +11,19 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="io.github.shredktp.trainschedulesrt.SearchStationActivity"
-    tools:showIn="@layout/activity_search_station">
+    tools:context="io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity"
+    tools:showIn="@layout/activity_select_station">
 
-    <Button
-        android:id="@+id/btn_station"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get Station" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/select_station_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
+
+    <!--<Button-->
+        <!--android:id="@+id/btn_station"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Get Station" />-->
 
 </LinearLayout>

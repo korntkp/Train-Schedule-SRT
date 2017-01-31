@@ -1,40 +1,57 @@
-package io.github.shredktp.trainschedulesrt;
+package io.github.shredktp.trainschedulesrt.select_station;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.claudiodegio.msv.BaseMaterialSearchView;
 import com.claudiodegio.msv.OnSearchViewListener;
 
-public class SearchStationActivity extends AppCompatActivity implements View.OnClickListener, OnSearchViewListener {
+import java.util.ArrayList;
+
+import io.github.shredktp.trainschedulesrt.R;
+import io.github.shredktp.trainschedulesrt.data.StationDataSource;
+import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
+import io.github.shredktp.trainschedulesrt.model.Station;
+
+public class SelectStationActivity extends AppCompatActivity implements View.OnClickListener, OnSearchViewListener {
 
     public static final int REQUEST_CODE_START_STATION = 12794;
     public static final int REQUEST_CODE_END_STATION = 12795;
     public static final String EXTRA_KEY_REQUEST_CODE = "request_c";
     public static final String INTENT_EXTRA_KEY_STATION = "station";
-    private static final String TAG = "SearchStaAct";
+    private static final String TAG = "SelectStaAct";
 
-    Button btnStation;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapterRecyclerView;
+    private RecyclerView.LayoutManager layoutManagerRecyclerView;
+    private DividerItemDecoration dividerItemDecoration;
+
+//    Button btnStation;
     int req;
+    ArrayList<Station> stationArrayList;
     BaseMaterialSearchView baseMaterialSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_station);
+        setContentView(R.layout.activity_select_station);
 
         setupToolbar();
         getExtraFromIntent();
         setupView();
+        setupStationFromDb();
+        setupRecyclerView();
     }
 
     private void setupToolbar() {
@@ -48,22 +65,41 @@ public class SearchStationActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setupView() {
-        baseMaterialSearchView = (BaseMaterialSearchView) findViewById(R.id.search_station_search_view);
+        baseMaterialSearchView = (BaseMaterialSearchView) findViewById(R.id.select_station_search_view);
         baseMaterialSearchView.setOnSearchViewListener(this);
         baseMaterialSearchView.setVisibility(View.VISIBLE);
 
-        btnStation = (Button) findViewById(R.id.btn_station);
-        btnStation.setOnClickListener(this);
+//        btnStation = (Button) findViewById(R.id.btn_station);
+//        btnStation.setOnClickListener(this);
+    }
+
+    private void setupStationFromDb() {
+        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+        stationArrayList = stationDataSource.getAllStation();
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_station: {
-                returnStationResult();
-                break;
-            }
-        }
+//        switch (view.getId()) {
+//            case R.id.btn_station: {
+//                returnStationResult();
+//                break;
+//            }
+//        }
+    }
+
+    private void setupRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.select_station_recycler_view);
+
+        // use a linear layout manager
+        layoutManagerRecyclerView = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManagerRecyclerView);
+        dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        // specify an adapter (see also next example)
+        adapterRecyclerView = new SelectStationAdapter(stationArrayList);
+        recyclerView.setAdapter(adapterRecyclerView);
     }
 
     private void returnStationResult() {
@@ -112,6 +148,6 @@ public class SearchStationActivity extends AppCompatActivity implements View.OnC
     }
 
     private void queryStation() {
-        // TODO: 31-Jan-17 List View
+        // TODO: 31-Jan-17 Create Recycler View
     }
 }

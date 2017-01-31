@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationTask;
 import io.github.shredktp.trainschedulesrt.model.Station;
 import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
-import io.github.shredktp.trainschedulesrt.srt_api.SrtApi;
-import io.github.shredktp.trainschedulesrt.srt_api.ToStringConverterFactory;
+import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
+import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
+import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,10 +31,10 @@ import retrofit2.Retrofit;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_end;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_start;
-import static io.github.shredktp.trainschedulesrt.SearchStationActivity.EXTRA_KEY_REQUEST_CODE;
-import static io.github.shredktp.trainschedulesrt.SearchStationActivity.INTENT_EXTRA_KEY_STATION;
-import static io.github.shredktp.trainschedulesrt.SearchStationActivity.REQUEST_CODE_END_STATION;
-import static io.github.shredktp.trainschedulesrt.SearchStationActivity.REQUEST_CODE_START_STATION;
+import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.EXTRA_KEY_REQUEST_CODE;
+import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.INTENT_EXTRA_KEY_STATION;
+import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.REQUEST_CODE_END_STATION;
+import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.REQUEST_CODE_START_STATION;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -102,25 +103,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Elements optionElements = tr.getElementsByTag("option");
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
+        Station[] stations = new Station[optionElements.size()];
+        int i = 0;
         for (Element option : optionElements) {
             String optionValue = option.attr("value");
 //            String optionDisplay = option.text();
             stationArrayList.add(new Station(optionValue));
+            stations[i++] = new Station(optionValue);
         }
 
         Log.d(TAG, "stationParser: starting setText");
         setStationToTextview(stationArrayList);
 
         Log.d(TAG, "stationParser: starting add to db");
-        addStation(stationArrayList);
+//        addStation(stationArrayList);
+        addStation(stations);
     }
-
-//    private void setTextFromDb() {
-//        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-//        ArrayList<Station> stationArrayList = stationDataSource.getAllStation();
-//
-//        setStationToTextview(stationArrayList);
-//    }
 
     private void setStationToTextview(ArrayList<Station> stationArrayList) {
         String result = "";
@@ -130,8 +128,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvStation.setText(result);
     }
 
-    private void addStation(ArrayList<Station> stationArrayList) {
-        new UpdateStationTask(getApplicationContext()).execute(stationArrayList);
+    private void addStation(Station [] stations) {
+        new UpdateStationTask(getApplicationContext()).execute(stations);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {
@@ -222,13 +220,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case btn_start: {
-                Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_START_STATION);
                 startActivityForResult(intent, REQUEST_CODE_START_STATION);
                 break;
             }
             case btn_end: {
-                Intent intent = new Intent(MainActivity.this, SearchStationActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_END_STATION);
                 startActivityForResult(intent, REQUEST_CODE_END_STATION);
                 break;

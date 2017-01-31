@@ -12,6 +12,7 @@ public interface StationDataSource {
     long addStation(String name);
     long addStation(String name, String line);
     long addStation(ArrayList<Station> stationArrayList);
+    long addStation(Station[] station);
 
     ArrayList<Station> getAllStation();
     Station getStation(String name);

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.github.shredktp.trainschedulesrt.SearchStationActivity">
+    tools:context="io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/search_station_toolbar"
@@ -18,7 +18,7 @@
         app:theme="@style/Toolbar" />
 
     <com.claudiodegio.msv.MaterialSearchView
-        android:id="@+id/search_station_search_view"
+        android:id="@+id/select_station_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <include layout="@layout/content_search_station" />
+        <include layout="@layout/content_select_station" />
 
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.srt_api;
+package io.github.shredktp.trainschedulesrt.api_srt;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
