@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
-import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationTask;
 import io.github.shredktp.trainschedulesrt.data.StationDataSource;
 import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
 import io.github.shredktp.trainschedulesrt.model.Station;
@@ -101,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void stationParser(String html) {
-//        Log.d(TAG, "stationParser: " + html);
         Log.d(TAG, "stationParser: starting parse");
         Document document = Jsoup.parse(html);
         Element body = document.body();
@@ -109,15 +107,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Element table = divMainContent.select("table").get(2);
         Element tr = table.child(0);
         Element tbodytr = tr.child(1);
-//        Log.d(TAG, "stationParser: " + tbodytr.toString());
         Element elementStation = tbodytr.getElementById("StationFirst");
-        Log.d(TAG, "stationParser: " + elementStation.toString());
-//        Elements optionElements = tbodytr.getElementsByTag("option");
         Elements optionElements = elementStation.getElementsByTag("option");
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
-        Station[] stations = new Station[optionElements.size()];
-        int i = 0;
+//        Station[] stations = new Station[optionElements.size()];
+//        int i = 0;
         for (Element option : optionElements) {
             String optionValue = option.attr("value");
             Log.d(TAG, "stationParser: " + optionValue);
@@ -144,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvStation.setText(result);
     }
 
-    private void addStationByArray(Station[] stations) {
-        new UpdateStationTask(getApplicationContext()).execute(stations);
-    }
+//    private void addStationByArray(Station[] stations) {
+//        new UpdateStationTask(getApplicationContext()).execute(stations);
+//    }
 
     private void addStationByArrayList(ArrayList<Station> stationArrayList) {
         Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());

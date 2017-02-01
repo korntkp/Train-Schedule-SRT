@@ -76,6 +76,7 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
     private void setupStationFromDb() {
         StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
         stationArrayList = stationDataSource.getAllStation();
+        Log.d(TAG, "setupStationFromDb: " + stationArrayList.size());
     }
 
     @Override

@@ -39,6 +39,7 @@ public class StationDataSourceImpl implements StationDataSource {
 
         cursor.close();
         sqLiteDatabase.close();
+        dbHelper.close();
         return countStation;
     }
 
@@ -53,6 +54,7 @@ public class StationDataSourceImpl implements StationDataSource {
         long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
+        dbHelper.close();
         return result;
     }
 
@@ -67,6 +69,7 @@ public class StationDataSourceImpl implements StationDataSource {
         long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
+        dbHelper.close();
         return result;
     }
 
@@ -87,6 +90,7 @@ public class StationDataSourceImpl implements StationDataSource {
 //        Log.d(TAG, "addStation: after insert: " + result);
 
         sqLiteDatabase.close();
+        dbHelper.close();
         return result;
     }
 
@@ -107,6 +111,7 @@ public class StationDataSourceImpl implements StationDataSource {
 //        Log.d(TAG, "addStation: after insert: " + result);
 
         sqLiteDatabase.close();
+        dbHelper.close();
         return result;
     }
 
@@ -123,7 +128,10 @@ public class StationDataSourceImpl implements StationDataSource {
         Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
         cursor.moveToFirst();
 
-        if (cursor.getCount() == 0) {
+        int countCursor = cursor.getCount();
+        Log.d(TAG, "getAllStation Row count: " + countCursor);
+
+        if (countCursor == 0) {
             Log.w(TAG, "getAllStation: No item in Station Table");
         }
 
@@ -134,7 +142,7 @@ public class StationDataSourceImpl implements StationDataSource {
 
         cursor.close();
         sqLiteDatabase.close();
-
+        dbHelper.close();
         return stationArrayList;
     }
 
