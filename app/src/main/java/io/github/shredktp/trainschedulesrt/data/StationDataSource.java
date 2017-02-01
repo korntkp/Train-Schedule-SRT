@@ -9,6 +9,8 @@ import io.github.shredktp.trainschedulesrt.model.Station;
  */
 
 public interface StationDataSource {
+    int countStation();
+
     long addStation(String name);
     long addStation(String name, String line);
     long addStation(ArrayList<Station> stationArrayList);

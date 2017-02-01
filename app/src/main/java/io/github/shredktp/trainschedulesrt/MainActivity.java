@@ -17,12 +17,15 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
+import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
+import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationTask;
+import io.github.shredktp.trainschedulesrt.data.StationDataSource;
+import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
 import io.github.shredktp.trainschedulesrt.model.Station;
 import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
-import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
-import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,7 +59,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setupToolbar();
         setupView();
-        stationApiRequester();
+
+        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+        if (stationDataSource.countStation() <= 0) {
+            Log.d(TAG, "onCreate: Setup Station");
+            stationApiRequester();
+        }
     }
 
     private void stationApiRequester() {
@@ -100,24 +108,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Element divMainContent = body.child(0);
         Element table = divMainContent.select("table").get(2);
         Element tr = table.child(0);
-        Elements optionElements = tr.getElementsByTag("option");
+        Element tbodytr = tr.child(1);
+//        Log.d(TAG, "stationParser: " + tbodytr.toString());
+        Element elementStation = tbodytr.getElementById("StationFirst");
+        Log.d(TAG, "stationParser: " + elementStation.toString());
+//        Elements optionElements = tbodytr.getElementsByTag("option");
+        Elements optionElements = elementStation.getElementsByTag("option");
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
         Station[] stations = new Station[optionElements.size()];
         int i = 0;
         for (Element option : optionElements) {
             String optionValue = option.attr("value");
+            Log.d(TAG, "stationParser: " + optionValue);
+            if (!optionValue.equals("")) {
 //            String optionDisplay = option.text();
-            stationArrayList.add(new Station(optionValue));
-            stations[i++] = new Station(optionValue);
+                stationArrayList.add(new Station(optionValue));
+//                stations[i++] = new Station(optionValue);
+            }
         }
 
         Log.d(TAG, "stationParser: starting setText");
         setStationToTextview(stationArrayList);
 
         Log.d(TAG, "stationParser: starting add to db");
-//        addStation(stationArrayList);
-        addStation(stations);
+        addStationByArrayList(stationArrayList);
+//        addStationByArray(stations);
     }
 
     private void setStationToTextview(ArrayList<Station> stationArrayList) {
@@ -128,8 +144,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvStation.setText(result);
     }
 
-    private void addStation(Station [] stations) {
+    private void addStationByArray(Station[] stations) {
         new UpdateStationTask(getApplicationContext()).execute(stations);
+    }
+
+    private void addStationByArrayList(ArrayList<Station> stationArrayList) {
+        Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
+        new UpdateStationArrayListTask(getApplicationContext()).execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {

@@ -25,6 +25,24 @@ public class StationDataSourceImpl implements StationDataSource {
     }
 
     @Override
+    public int countStation() {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+
+        String queryStation = String.format("SELECT * FROM %s",
+                Station.STATION_TABLE_NAME);
+
+        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        cursor.moveToFirst();
+
+        int countStation = cursor.getCount();
+
+        cursor.close();
+        sqLiteDatabase.close();
+        return countStation;
+    }
+
+    @Override
     public long addStation(String name) {
         DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
