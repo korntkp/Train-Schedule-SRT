@@ -163,13 +163,10 @@ public class StationDataSourceImpl implements StationDataSource {
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
 
-        String queryStation = "SELECT * FROM " + Station.STATION_TABLE_NAME + " WHERE " + Station.Column.NAME + " LIKE \'%" + piecesOfStation + "%\'";
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
-
-//        String [] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
-//        String selection = Station.Column.NAME + " LIKE \'?\'";
-//        String [] selectionArgs = new String[]{piecesOfStation+ "%"};
-//        Cursor cursor = sqLiteDatabase.query(Station.STATION_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        String [] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
+        String selection = Station.Column.NAME + " LIKE ?";
+        String [] selectionArgs = new String[]{"%" + piecesOfStation+ "%"};
+        Cursor cursor = sqLiteDatabase.query(Station.STATION_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
