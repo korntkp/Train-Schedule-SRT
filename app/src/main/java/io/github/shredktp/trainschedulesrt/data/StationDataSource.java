@@ -20,6 +20,8 @@ public interface StationDataSource {
     Station getStation(String name);
     Station getStation(String name, String line);
 
+    ArrayList<Station> searchStation(String piecesOfStation);
+
 //    long updateStation(String name);
 //    long updateStation(ArrayList<Station> stationArrayList);
 

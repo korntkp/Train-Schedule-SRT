@@ -1,6 +1,5 @@
 package io.github.shredktp.trainschedulesrt.select_station;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.claudiodegio.msv.BaseMaterialSearchView;
 import com.claudiodegio.msv.OnSearchViewListener;
@@ -103,18 +101,18 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
         recyclerView.setAdapter(adapterRecyclerView);
     }
 
-    private void returnStationResult(String stationName) {
-        Intent resultIntent = new Intent();
-        if (req == REQUEST_CODE_START_STATION) {
-            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
-        } else if (req == REQUEST_CODE_END_STATION) {
-            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
-        } else {
-            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, "-");
-        }
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-    }
+//    private void returnStationResult(String stationName) {
+//        Intent resultIntent = new Intent();
+//        if (req == REQUEST_CODE_START_STATION) {
+//            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
+//        } else if (req == REQUEST_CODE_END_STATION) {
+//            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
+//        } else {
+//            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, "-");
+//        }
+//        setResult(Activity.RESULT_OK, resultIntent);
+//        finish();
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,18 +135,21 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
     @Override
     public boolean onQueryTextSubmit(String s) {
         Log.d(TAG, "onQueryTextSubmit: " + s);
-        Toast.makeText(this, "Searching: " + s, Toast.LENGTH_SHORT).show();
-        queryStation();
+        queryStation(s);
         return true;
     }
 
     @Override
     public void onQueryTextChange(String s) {
         Log.d(TAG, "onQueryTextChange: " + s);
-        queryStation();
+        queryStation(s);
     }
 
-    private void queryStation() {
-        // TODO: 31-Jan-17 Create Recycler View
+    private void queryStation(String pieceOfStation) {
+        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
+        stationArrayList = stationDataSource.searchStation(pieceOfStation);
+        adapterRecyclerView = new SelectStationAdapter(stationArrayList, SelectStationActivity.this, req);
+        adapterRecyclerView.notifyDataSetChanged();
+        recyclerView.setAdapter(adapterRecyclerView);
     }
 }

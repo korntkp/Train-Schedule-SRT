@@ -155,4 +155,38 @@ public class StationDataSourceImpl implements StationDataSource {
     public Station getStation(String name, String line) {
         return null;
     }
+
+    @Override
+    public ArrayList<Station> searchStation(String piecesOfStation) {
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+
+        ArrayList<Station> stationArrayList = new ArrayList<>();
+
+        String queryStation = "SELECT * FROM " + Station.STATION_TABLE_NAME + " WHERE " + Station.Column.NAME + " LIKE \'%" + piecesOfStation + "%\'";
+        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+
+//        String [] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
+//        String selection = Station.Column.NAME + " LIKE \'?\'";
+//        String [] selectionArgs = new String[]{piecesOfStation+ "%"};
+//        Cursor cursor = sqLiteDatabase.query(Station.STATION_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        cursor.moveToFirst();
+
+        int countCursor = cursor.getCount();
+        Log.d(TAG, "getAllStation Row count: " + countCursor);
+
+        if (countCursor == 0) {
+            Log.w(TAG, "getAllStation: No item in Station Table");
+        }
+
+        while (!cursor.isAfterLast()) {
+            stationArrayList.add(new Station(cursor.getString(cursor.getColumnIndex(Station.Column.NAME)), cursor.getString(cursor.getColumnIndex(Station.Column.LINE))));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        sqLiteDatabase.close();
+        dbHelper.close();
+        return stationArrayList;
+    }
 }
