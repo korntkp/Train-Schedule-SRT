@@ -99,16 +99,16 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         // specify an adapter (see also next example)
-        adapterRecyclerView = new SelectStationAdapter(stationArrayList);
+        adapterRecyclerView = new SelectStationAdapter(stationArrayList, SelectStationActivity.this, req);
         recyclerView.setAdapter(adapterRecyclerView);
     }
 
-    private void returnStationResult() {
+    private void returnStationResult(String stationName) {
         Intent resultIntent = new Intent();
         if (req == REQUEST_CODE_START_STATION) {
-            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, "กรุงเทพ");
+            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
         } else if (req == REQUEST_CODE_END_STATION) {
-            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, "อยุธยา");
+            resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, stationName);
         } else {
             resultIntent.putExtra(INTENT_EXTRA_KEY_STATION, "-");
         }
