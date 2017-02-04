@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt;
+package io.github.shredktp.trainschedulesrt.show_schedule;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,6 +20,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
@@ -42,14 +46,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "MainActivity";
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
+    private static final String NO_TRAIN = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
 
     Button btnGo;
     Button btnStart, btnEnd;
-//    EditText edtStart, edtEnd;
 
+    ListView listViewSchedule;
+    LinearLayout linearLayoutDetail;
     TextView tvDetail;
-    TextView tvStation;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +77,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
 
         SrtApi srtApi = retrofit.create(SrtApi.class);
-        Call<String> trainScheduleBodyCall = srtApi.getStation();
+        Call<String> stationCaller = srtApi.getStation();
 
-        trainScheduleBodyCall.enqueue(new Callback<String>() {
+        stationCaller.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "trainScheduleBodyCall onResponse: isSuccessful");
+                    Log.d(TAG, "stationCaller onResponse: isSuccessful");
                     String result = response.body();
                     stationParser(result);
                 } else {
@@ -94,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onFailure: " + call.request().toString());
 //                Log.d(TAG, "onFailure: " + call.request().body().contentType());
 //                Log.d(TAG, "onFailure: " + call.request().body().toString());
-                tvDetail.setText(t.getMessage());
+//                tvDetail.setText(t.getMessage());
+                Toast.makeText(MainActivity.this, NO_TRAIN, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -123,20 +128,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        Log.d(TAG, "stationParser: starting setText");
-        setStationToTextview(stationArrayList);
-
         Log.d(TAG, "stationParser: starting add to db");
         addStationByArrayList(stationArrayList);
 //        addStationByArray(stations);
-    }
-
-    private void setStationToTextview(ArrayList<Station> stationArrayList) {
-        String result = "";
-        for (int i = 0; i < stationArrayList.size(); i++) {
-            result += "Name: " + stationArrayList.get(i).getName() + "\n";
-        }
-        tvStation.setText(result);
     }
 
 //    private void addStationByArray(Station[] stations) {
@@ -173,14 +167,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-                tvDetail.setText(t.getMessage());
+                listViewSchedule.setVisibility(View.GONE);
+                linearLayoutDetail.setVisibility(View.VISIBLE);
+                tvDetail.setText(NO_TRAIN);
             }
         });
     }
 
     private void trainScheduleParser(String html) {
-        if (html.contains("ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก")) {
-            tvDetail.setText("ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก");
+        if (html.contains(NO_TRAIN)) {
+            listViewSchedule.setVisibility(View.GONE);
+            linearLayoutDetail.setVisibility(View.VISIBLE);
+            tvDetail.setText(NO_TRAIN);
+            Toast.makeText(this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -200,12 +199,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             trainScheduleArrayList.add(new TrainSchedule(trainNum.text(), trainType.text(), leaveTime.text(), arriveTime.text()));
         }
 
-        String result = "";
-        for (int i = 0; i < trainScheduleArrayList.size(); i++) {
-//            Log.d(TAG, "trainScheduleParser: " + trainScheduleArrayList.get(i).toString());
-            result += "รถออก: " + trainScheduleArrayList.get(i).getStartTime() + "\n";
-        }
-        tvDetail.setText(result);
+        setupResult(trainScheduleArrayList);
+
+//        String result = "";
+//        for (int i = 0; i < trainScheduleArrayList.size(); i++) {
+////            Log.d(TAG, "trainScheduleParser: " + trainScheduleArrayList.get(i).toString());
+//            result += "รถออก: " + trainScheduleArrayList.get(i).getStartTime() + "\n";
+//        }
+//        tvDetail.setText(result);
+    }
+
+    private void setupResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
+        linearLayoutDetail.setVisibility(View.GONE);
+        listViewSchedule.setVisibility(View.VISIBLE);
+        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(getApplicationContext(), trainScheduleArrayList);
+        scheduleAdapter.notifyDataSetChanged();
+        listViewSchedule.setAdapter(scheduleAdapter);
     }
 
     private void setupToolbar() {
@@ -218,10 +227,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnStart = (Button) findViewById(btn_start);
         btnEnd = (Button) findViewById(btn_end);
         tvDetail = (TextView) findViewById(R.id.tv_detail);
-        tvStation = (TextView) findViewById(R.id.tv_station);
+//        tvStation = (TextView) findViewById(R.id.tv_station);
+        listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
+        linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
 
-//        btnStart.setText("กรุงเทพ");
-//        btnEnd.setText("อยุธยา");
 
         btnGo.setOnClickListener(this);
         btnStart.setOnClickListener(this);
@@ -231,10 +240,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case btn_go: {
-                trainScheduleApiRequester(btnStart.getText().toString(), btnEnd.getText().toString());
-                break;
-            }
             case btn_start: {
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_START_STATION);
@@ -245,6 +250,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_END_STATION);
                 startActivityForResult(intent, REQUEST_CODE_END_STATION);
+                break;
+            }
+            case btn_go: {
+                trainScheduleApiRequester(btnStart.getText().toString(), btnEnd.getText().toString());
                 break;
             }
         }

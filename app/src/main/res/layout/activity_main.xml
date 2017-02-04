@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:contextActivity="io.github.shredktp.trainschedulesrt.MainActivity">
+    tools:contextActivity="io.github.shredktp.trainschedulesrt.show_schedule.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

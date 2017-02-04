@@ -170,7 +170,7 @@ public class StationDataSourceImpl implements StationDataSource {
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
-        Log.d(TAG, "getAllStation Row count: " + countCursor);
+        Log.d(TAG, "Search Row count: " + countCursor);
 
         if (countCursor == 0) {
             Log.w(TAG, "getAllStation: No item in Station Table");
