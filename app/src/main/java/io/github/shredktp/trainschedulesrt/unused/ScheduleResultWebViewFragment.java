@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt;
+package io.github.shredktp.trainschedulesrt.unused;
 
 
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+
+import io.github.shredktp.trainschedulesrt.R;
 
 
 /**

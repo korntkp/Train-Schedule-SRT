@@ -7,14 +7,24 @@ package io.github.shredktp.trainschedulesrt.model;
 public class TrainSchedule {
     private String number;
     private String type;
-    private String leaveTime;
-    private String arriveTime;
+    private String startTime;
+    private String endTime;
 
-    public TrainSchedule(String number, String type, String leaveTime, String arriveTime) {
+    public static final String TRAIN_SCHEDULE_TABLE_NAME = "TrainSchedule";
+
+    public class Column {
+        public static final String ID = "_id";
+        public static final String NAME = "number";
+        public static final String TYPE = "type";
+        public static final String START_TIME = "startTime";
+        public static final String END_TIME = "endTime";
+    }
+
+    public TrainSchedule(String number, String type, String startTime, String endTime) {
         this.number = number;
         this.type = type;
-        this.leaveTime = leaveTime;
-        this.arriveTime = arriveTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public String getNumber() {
@@ -33,20 +43,20 @@ public class TrainSchedule {
         this.type = type;
     }
 
-    public String getLeaveTime() {
-        return leaveTime;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setLeaveTime(String leaveTime) {
-        this.leaveTime = leaveTime;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getArriveTime() {
-        return arriveTime;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setArriveTime(String arriveTime) {
-        this.arriveTime = arriveTime;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -54,8 +64,8 @@ public class TrainSchedule {
         return "TrainSchedule{" +
                 "\nnumber='" + number + '\'' +
                 ",\ntype='" + type + '\'' +
-                ",\nleaveTime='" + leaveTime + '\'' +
-                ",\narriveTime='" + arriveTime + '\'' +
+                ",\nstartTime='" + startTime + '\'' +
+                ",\nendTime='" + endTime + '\'' +
                 "\n}";
     }
 }
