@@ -3,9 +3,8 @@ package io.github.shredktp.trainschedulesrt.asynctask;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import io.github.shredktp.trainschedulesrt.data.StationDataSource;
-import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
-import io.github.shredktp.trainschedulesrt.model.Station;
+import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
 
 /**
  * Created by Korshreddern on 29-Jan-17.
@@ -21,8 +20,9 @@ public class UpdateStationTask extends AsyncTask<Station, Void, Void> {
 
     @Override
     protected Void doInBackground(Station... stations) {
-        StationDataSource stationDataSource = new StationDataSourceImpl(context);
-        stationDataSource.addStation(stations);
+//        StationDataSource stationDataSource = new StationLocalDataSource(context);
+//        stationDataSource.addStation(stations);
+        StationLocalDataSource.getInstance().addStation(stations);
         return null;
     }
 }

@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.data;
+package io.github.shredktp.trainschedulesrt.data.source.local;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,20 +8,26 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import io.github.shredktp.trainschedulesrt.model.Station;
+import io.github.shredktp.trainschedulesrt.Contextor;
+import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.source.StationDataSource;
 
 /**
  * Created by Korshreddern on 28-Jan-17.
  */
 
-public class StationDataSourceImpl implements StationDataSource {
+public class StationLocalDataSource implements StationDataSource {
     private static final String TAG = "StationDSrc";
     private Context context;
-//    private static AuthSuccessDataSource authSuccessDataSource = null;
+    private static StationLocalDataSource instance;
 
+    public static StationLocalDataSource getInstance() {
+        if (instance == null) instance = new StationLocalDataSource();
+        return instance;
+    }
 
-    public StationDataSourceImpl(Context context) {
-        this.context = context;
+    private StationLocalDataSource() {
+        this.context = Contextor.getInstance().getContext();
     }
 
     @Override
@@ -163,9 +169,9 @@ public class StationDataSourceImpl implements StationDataSource {
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
 
-        String [] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
+        String[] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
         String selection = Station.Column.NAME + " LIKE ?";
-        String [] selectionArgs = new String[]{"%" + piecesOfStation+ "%"};
+        String[] selectionArgs = new String[]{"%" + piecesOfStation + "%"};
         Cursor cursor = sqLiteDatabase.query(Station.STATION_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
         cursor.moveToFirst();
 

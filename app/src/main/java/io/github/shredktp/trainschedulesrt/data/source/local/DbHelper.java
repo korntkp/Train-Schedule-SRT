@@ -1,11 +1,11 @@
-package io.github.shredktp.trainschedulesrt.data;
+package io.github.shredktp.trainschedulesrt.data.source.local;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import io.github.shredktp.trainschedulesrt.model.Station;
-import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 
 /**
  * Created by Korshreddern on 28-Jan-17.

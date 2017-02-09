@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.model;
+package io.github.shredktp.trainschedulesrt.data;
 
 /**
  * Created by Korshreddern on 28-Jan-17.

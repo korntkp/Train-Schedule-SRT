@@ -3,6 +3,7 @@ package io.github.shredktp.trainschedulesrt.show_schedule;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,10 +25,9 @@ import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
-import io.github.shredktp.trainschedulesrt.data.StationDataSource;
-import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
-import io.github.shredktp.trainschedulesrt.model.Station;
-import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,8 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupToolbar();
         setupView();
 
-        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-        if (stationDataSource.countStation() <= 0) {
+//        StationDataSource stationDataSource = new StationLocalDataSource(getApplicationContext());
+        int countStation = StationLocalDataSource.getInstance().countStation();
+        if (countStation <= 0) {
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
         }
@@ -96,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-//                Log.d(TAG, "onFailure: " + call.request().body().contentType());
-//                Log.d(TAG, "onFailure: " + call.request().body().toString());
-//                tvDetail.setText(t.getMessage());
                 Toast.makeText(MainActivity.this, NO_TRAIN, Toast.LENGTH_SHORT).show();
             }
         });
@@ -106,6 +104,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void stationParser(String html) {
         Log.d(TAG, "stationParser: starting parse");
+        ArrayList<Station> stationArrayList = stationExtractor(html);
+        addStationByArrayList(stationArrayList);
+//        addStationByArray(stations);
+    }
+
+    @NonNull
+    private ArrayList<Station> stationExtractor(String html) {
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(0);
@@ -120,17 +125,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        int i = 0;
         for (Element option : optionElements) {
             String optionValue = option.attr("value");
-            Log.d(TAG, "stationParser: " + optionValue);
             if (!optionValue.equals("")) {
 //            String optionDisplay = option.text();
                 stationArrayList.add(new Station(optionValue));
 //                stations[i++] = new Station(optionValue);
             }
         }
-
-        Log.d(TAG, "stationParser: starting add to db");
-        addStationByArrayList(stationArrayList);
-//        addStationByArray(stations);
+        return stationArrayList;
     }
 
 //    private void addStationByArray(Station[] stations) {
@@ -183,6 +184,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(html);
+        setupResult(trainScheduleArrayList);
+    }
+
+    @NonNull
+    private ArrayList<TrainSchedule> scheduleExtractor(String html) {
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(1);
@@ -198,15 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Element arriveTime = tr.select("div").get(4);
             trainScheduleArrayList.add(new TrainSchedule(trainNum.text(), trainType.text(), leaveTime.text(), arriveTime.text()));
         }
-
-        setupResult(trainScheduleArrayList);
-
-//        String result = "";
-//        for (int i = 0; i < trainScheduleArrayList.size(); i++) {
-////            Log.d(TAG, "trainScheduleParser: " + trainScheduleArrayList.get(i).toString());
-//            result += "รถออก: " + trainScheduleArrayList.get(i).getStartTime() + "\n";
-//        }
-//        tvDetail.setText(result);
+        return trainScheduleArrayList;
     }
 
     private void setupResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
