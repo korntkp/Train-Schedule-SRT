@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.source.StationDataSource;
 
@@ -18,21 +17,23 @@ import io.github.shredktp.trainschedulesrt.data.source.StationDataSource;
 
 public class StationLocalDataSource implements StationDataSource {
     private static final String TAG = "StationDSrc";
-    private Context context;
-    private static StationLocalDataSource instance;
 
-    public static StationLocalDataSource getInstance() {
-        if (instance == null) instance = new StationLocalDataSource();
-        return instance;
+    private static StationLocalDataSource INSTANCE;
+    private DbHelper dbHelper;
+
+    public static StationLocalDataSource getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new StationLocalDataSource(context);
+        }
+        return INSTANCE;
     }
 
-    private StationLocalDataSource() {
-        this.context = Contextor.getInstance().getContext();
+    private StationLocalDataSource(Context context) {
+        this.dbHelper = new DbHelper(context);
     }
 
     @Override
     public int countStation() {
-        DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
 
         String queryStation = String.format("SELECT * FROM %s",
@@ -45,13 +46,11 @@ public class StationLocalDataSource implements StationDataSource {
 
         cursor.close();
         sqLiteDatabase.close();
-        dbHelper.close();
         return countStation;
     }
 
     @Override
     public long addStation(String name) {
-        DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -60,13 +59,11 @@ public class StationLocalDataSource implements StationDataSource {
         long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
-        dbHelper.close();
         return result;
     }
 
     @Override
     public long addStation(String name, String line) {
-        DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -75,13 +72,11 @@ public class StationLocalDataSource implements StationDataSource {
         long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
-        dbHelper.close();
         return result;
     }
 
     @Override
     public long addStation(ArrayList<Station> stationArrayList) {
-        DbHelper dbHelper = new DbHelper(context);
 //        Log.d(TAG, "addStation: after dbhelper");
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 //        Log.d(TAG, "addStation: after getWrite" + stationArrayList.size());
@@ -96,13 +91,11 @@ public class StationLocalDataSource implements StationDataSource {
 //        Log.d(TAG, "addStation: after insert: " + result);
 
         sqLiteDatabase.close();
-        dbHelper.close();
         return result;
     }
 
     @Override
     public long addStation(Station[] station) {
-        DbHelper dbHelper = new DbHelper(context);
 //        Log.d(TAG, "addStation: after dbhelper");
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 //        Log.d(TAG, "addStation: after getWrite" + stationArrayList.size());
@@ -117,13 +110,11 @@ public class StationLocalDataSource implements StationDataSource {
 //        Log.d(TAG, "addStation: after insert: " + result);
 
         sqLiteDatabase.close();
-        dbHelper.close();
         return result;
     }
 
     @Override
     public ArrayList<Station> getAllStation() {
-        DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
@@ -148,7 +139,6 @@ public class StationLocalDataSource implements StationDataSource {
 
         cursor.close();
         sqLiteDatabase.close();
-        dbHelper.close();
         return stationArrayList;
     }
 
@@ -164,7 +154,6 @@ public class StationLocalDataSource implements StationDataSource {
 
     @Override
     public ArrayList<Station> searchStation(String piecesOfStation) {
-        DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
@@ -189,7 +178,6 @@ public class StationLocalDataSource implements StationDataSource {
 
         cursor.close();
         sqLiteDatabase.close();
-        dbHelper.close();
         return stationArrayList;
     }
 }

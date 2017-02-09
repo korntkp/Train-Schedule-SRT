@@ -21,6 +21,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupView();
 
 //        StationDataSource stationDataSource = new StationLocalDataSource(getApplicationContext());
-        int countStation = StationLocalDataSource.getInstance().countStation();
+        int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).countStation();
         if (countStation <= 0) {
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addStationByArrayList(ArrayList<Station> stationArrayList) {
         Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
-        new UpdateStationArrayListTask(getApplicationContext()).execute(stationArrayList);
+        new UpdateStationArrayListTask(Contextor.getInstance().getContext()).execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setupResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
         linearLayoutDetail.setVisibility(View.GONE);
         listViewSchedule.setVisibility(View.VISIBLE);
-        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(getApplicationContext(), trainScheduleArrayList);
+        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
         scheduleAdapter.notifyDataSetChanged();
         listViewSchedule.setAdapter(scheduleAdapter);
     }
