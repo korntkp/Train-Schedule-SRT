@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.R;
-import io.github.shredktp.trainschedulesrt.model.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 
 /**
  * Created by Korshreddern on 04-Feb-17.

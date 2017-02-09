@@ -1,8 +1,8 @@
-package io.github.shredktp.trainschedulesrt.data;
+package io.github.shredktp.trainschedulesrt.data.source;
 
 import java.util.ArrayList;
 
-import io.github.shredktp.trainschedulesrt.model.Station;
+import io.github.shredktp.trainschedulesrt.data.Station;
 
 /**
  * Created by Korshreddern on 28-Jan-17.

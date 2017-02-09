@@ -17,10 +17,10 @@ import com.claudiodegio.msv.OnSearchViewListener;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
-import io.github.shredktp.trainschedulesrt.data.StationDataSource;
-import io.github.shredktp.trainschedulesrt.data.StationDataSourceImpl;
-import io.github.shredktp.trainschedulesrt.model.Station;
+import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
 
 public class SelectStationActivity extends AppCompatActivity implements View.OnClickListener, OnSearchViewListener {
 
@@ -72,8 +72,9 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setupStationFromDb() {
-        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-        stationArrayList = stationDataSource.getAllStation();
+//        StationDataSource stationDataSource = new StationLocalDataSource(getApplicationContext());
+//        stationArrayList = stationDataSource.getAllStation();
+        stationArrayList = StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllStation();
         Log.d(TAG, "setupStationFromDb: " + stationArrayList.size());
     }
 
@@ -146,8 +147,9 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
     }
 
     private void queryStation(String pieceOfStation) {
-        StationDataSource stationDataSource = new StationDataSourceImpl(getApplicationContext());
-        stationArrayList = stationDataSource.searchStation(pieceOfStation);
+//        StationDataSource stationDataSource = new StationLocalDataSource(getApplicationContext());
+//        stationArrayList = stationDataSource.searchStation(pieceOfStation);
+        stationArrayList = StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).searchStation(pieceOfStation);
         adapterRecyclerView = new SelectStationAdapter(stationArrayList, SelectStationActivity.this, req);
         adapterRecyclerView.notifyDataSetChanged();
         recyclerView.setAdapter(adapterRecyclerView);
