@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.Station;
-import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
 
 public class SelectStationActivity extends AppCompatActivity implements View.OnClickListener, OnSearchViewListener {
 

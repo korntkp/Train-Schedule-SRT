@@ -10,7 +10,7 @@ import retrofit2.http.POST;
  * Created by Korshreddern on 23-Jan-17.
  */
 
-public interface SrtApi {
+public interface ApiSrt {
     @FormUrlEncoded
     @POST("checktime.asp")
     Call<String> getSchedule(@Field("StationFirst") String stationFirst, @Field("StationLast") String stationLast);

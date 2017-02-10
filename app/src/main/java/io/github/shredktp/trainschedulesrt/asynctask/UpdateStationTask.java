@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 
 import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.data.Station;
-import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
 
 /**
  * Created by Korshreddern on 29-Jan-17.

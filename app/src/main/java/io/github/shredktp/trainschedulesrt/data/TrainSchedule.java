@@ -5,26 +5,31 @@ package io.github.shredktp.trainschedulesrt.data;
  */
 
 public class TrainSchedule {
+    private String StartEndStation;
     private String number;
     private String type;
     private String startTime;
     private String endTime;
+    private boolean star;
+    private long timestamp;
 
-    public static final String TRAIN_SCHEDULE_TABLE_NAME = "TrainSchedule";
-
-    public class Column {
-        public static final String ID = "_id";
-        public static final String NAME = "number";
-        public static final String TYPE = "type";
-        public static final String START_TIME = "startTime";
-        public static final String END_TIME = "endTime";
-    }
-
-    public TrainSchedule(String number, String type, String startTime, String endTime) {
+    public TrainSchedule(String startEndStation, String number, String type, String startTime,
+                         String endTime, boolean star, long timestamp) {
+        StartEndStation = startEndStation;
         this.number = number;
         this.type = type;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.star = star;
+        this.timestamp = timestamp;
+    }
+
+    public String getStartEndStation() {
+        return StartEndStation;
+    }
+
+    public void setStartEndStation(String startEndStation) {
+        StartEndStation = startEndStation;
     }
 
     public String getNumber() {
@@ -59,13 +64,32 @@ public class TrainSchedule {
         this.endTime = endTime;
     }
 
+    public boolean isStar() {
+        return star;
+    }
+
+    public void setStar(boolean star) {
+        this.star = star;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return "TrainSchedule{" +
-                "\nnumber='" + number + '\'' +
+                "\nStartEndStation='" + StartEndStation + '\'' +
+                ",\nnumber='" + number + '\'' +
                 ",\ntype='" + type + '\'' +
                 ",\nstartTime='" + startTime + '\'' +
                 ",\nendTime='" + endTime + '\'' +
+                ",\nstar=" + star +
+                ",\ntimestamp=" + timestamp +
                 "\n}";
     }
 }

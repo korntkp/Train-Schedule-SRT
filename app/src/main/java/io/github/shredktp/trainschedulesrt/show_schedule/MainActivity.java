@@ -23,12 +23,12 @@ import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
-import io.github.shredktp.trainschedulesrt.api_srt.SrtApi;
+import io.github.shredktp.trainschedulesrt.api_srt.ApiSrt;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
 import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
-import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout linearLayoutDetail;
     TextView tvDetail;
 
+    String startStation = "";
+    String endStation = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupToolbar();
         setupView();
 
-//        StationDataSource stationDataSource = new StationLocalDataSource(getApplicationContext());
-        int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).countStation();
+        int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                .countStation();
         if (countStation <= 0) {
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
@@ -78,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addConverterFactory(new ToStringConverterFactory())
                 .build();
 
-        SrtApi srtApi = retrofit.create(SrtApi.class);
-        Call<String> stationCaller = srtApi.getStation();
+        ApiSrt apiSrt = retrofit.create(ApiSrt.class);
+        Call<String> stationCaller = apiSrt.getStation();
 
         stationCaller.enqueue(new Callback<String>() {
             @Override
@@ -122,14 +125,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Elements optionElements = elementStation.getElementsByTag("option");
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
-//        Station[] stations = new Station[optionElements.size()];
-//        int i = 0;
         for (Element option : optionElements) {
             String optionValue = option.attr("value");
             if (!optionValue.equals("")) {
-//            String optionDisplay = option.text();
                 stationArrayList.add(new Station(optionValue));
-//                stations[i++] = new Station(optionValue);
             }
         }
         return stationArrayList;
@@ -141,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addStationByArrayList(ArrayList<Station> stationArrayList) {
         Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
-        new UpdateStationArrayListTask(Contextor.getInstance().getContext()).execute(stationArrayList);
+        new UpdateStationArrayListTask(Contextor.getInstance().getContext())
+                .execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(String startStation, String endStation) {
@@ -150,8 +150,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addConverterFactory(new ToStringConverterFactory())
                 .build();
 
-        SrtApi srtApi = retrofit.create(SrtApi.class);
-        Call<String> trainScheduleBodyCall = srtApi.getSchedule(startStation, endStation);
+        ApiSrt apiSrt = retrofit.create(ApiSrt.class);
+        Call<String> trainScheduleBodyCall = apiSrt.getSchedule(startStation, endStation);
 
         trainScheduleBodyCall.enqueue(new Callback<String>() {
             @Override
@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(html);
+
+
+
         setupResult(trainScheduleArrayList);
     }
 
@@ -202,9 +205,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (Element tr : trElements) {
             Element trainNum = tr.select("div").get(1);
             Element trainType = tr.select("div").get(2);
-            Element leaveTime = tr.select("div").get(3);
-            Element arriveTime = tr.select("div").get(4);
-            trainScheduleArrayList.add(new TrainSchedule(trainNum.text(), trainType.text(), leaveTime.text(), arriveTime.text()));
+            Element startTime = tr.select("div").get(3);
+            Element endTime = tr.select("div").get(4);
+            trainScheduleArrayList.add(
+                    new TrainSchedule(startStation+endStation,
+                            trainNum.text(), trainType.text(), startTime.text(), endTime.text()));
         }
         return trainScheduleArrayList;
     }
@@ -212,7 +217,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setupResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
         linearLayoutDetail.setVisibility(View.GONE);
         listViewSchedule.setVisibility(View.VISIBLE);
-        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
+        ScheduleAdapter scheduleAdapter =
+                new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
         scheduleAdapter.notifyDataSetChanged();
         listViewSchedule.setAdapter(scheduleAdapter);
     }
@@ -253,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case btn_go: {
-                trainScheduleApiRequester(btnStart.getText().toString(), btnEnd.getText().toString());
+                trainScheduleApiRequester(startStation, endStation);
                 break;
             }
         }
@@ -263,13 +269,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_START_STATION) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
-                btnStart.setText(result);
+                startStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
+                btnStart.setText(startStation);
             }
         } else if (requestCode == REQUEST_CODE_END_STATION) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
-                btnEnd.setText(result);
+                endStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
+                btnEnd.setText(endStation);
             }
         }
     }
