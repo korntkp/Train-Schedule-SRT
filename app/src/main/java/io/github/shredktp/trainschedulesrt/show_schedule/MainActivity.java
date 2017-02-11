@@ -208,8 +208,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Element startTime = tr.select("div").get(3);
             Element endTime = tr.select("div").get(4);
             trainScheduleArrayList.add(
-                    new TrainSchedule(startStation+endStation,
-                            trainNum.text(), trainType.text(), startTime.text(), endTime.text()));
+                    new TrainSchedule((startStation.concat(endStation)),
+                            trainNum.text(),
+                            trainType.text(),
+                            startTime.text(),
+                            endTime.text(),
+                            System.currentTimeMillis()));
         }
         return trainScheduleArrayList;
     }

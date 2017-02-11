@@ -10,17 +10,15 @@ public class TrainSchedule {
     private String type;
     private String startTime;
     private String endTime;
-    private boolean star;
     private long timestamp;
 
     public TrainSchedule(String startEndStation, String number, String type, String startTime,
-                         String endTime, boolean star, long timestamp) {
-        StartEndStation = startEndStation;
+                         String endTime, long timestamp) {
+        this.StartEndStation = startEndStation;
         this.number = number;
         this.type = type;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.star = star;
         this.timestamp = timestamp;
     }
 
@@ -64,14 +62,6 @@ public class TrainSchedule {
         this.endTime = endTime;
     }
 
-    public boolean isStar() {
-        return star;
-    }
-
-    public void setStar(boolean star) {
-        this.star = star;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }
@@ -88,7 +78,6 @@ public class TrainSchedule {
                 ",\ntype='" + type + '\'' +
                 ",\nstartTime='" + startTime + '\'' +
                 ",\nendTime='" + endTime + '\'' +
-                ",\nstar=" + star +
                 ",\ntimestamp=" + timestamp +
                 "\n}";
     }
