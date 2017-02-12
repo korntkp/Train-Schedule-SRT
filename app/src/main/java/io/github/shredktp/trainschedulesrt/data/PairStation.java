@@ -8,11 +8,13 @@ public class PairStation {
     private String startStation;
     private String endStation;
     private boolean isSeeItFirst;
+    private long timestamp;
 
-    public PairStation(String startStation, String endStation, boolean isSeeItFirst) {
+    public PairStation(String startStation, String endStation, boolean isSeeItFirst, long timestamp) {
         this.startStation = startStation;
         this.endStation = endStation;
         this.isSeeItFirst = isSeeItFirst;
+        this.timestamp = timestamp;
     }
 
     public String getStartStation() {
@@ -39,12 +41,21 @@ public class PairStation {
         isSeeItFirst = seeItFirst;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return "PairStation{" +
                 "\nstartStation='" + startStation + '\'' +
                 ",\nendStation='" + endStation + '\'' +
                 ",\nisSeeItFirst=" + isSeeItFirst +
+                ",\ntimestamp=" + timestamp +
                 "\n}";
     }
 }

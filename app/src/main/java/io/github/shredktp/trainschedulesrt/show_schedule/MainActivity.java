@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -29,6 +34,7 @@ import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
 import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.history_search.HistoryActivity;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,15 +55,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
     private static final String NO_TRAIN = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
 
-    Button btnGo;
-    Button btnStart, btnEnd;
+    private Button btnGo;
+    private Button btnStart, btnEnd;
 
-    ListView listViewSchedule;
-    LinearLayout linearLayoutDetail;
-    TextView tvDetail;
+    private ListView listViewSchedule;
+    private LinearLayout linearLayoutDetail;
+    private TextView tvDetail;
+    private DrawerLayout drawerLayout;
 
-    String startStation = "";
-    String endStation = "";
+    private String startStation = "";
+    private String endStation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         setupToolbar();
+        setupNavigationDrawer();
         setupView();
 
         int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
@@ -74,6 +82,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             stationApiRequester();
         }
     }
+
+    private void setupToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setupNavigationDrawer() {
+        // Set up the navigation drawer.
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setStatusBarBackground(R.color.colorPrimaryDark);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.list_navigation_menu_item:
+                                // Do nothing, we're already on that screen
+                                break;
+                            case R.id.statistics_navigation_menu_item:
+                                Intent intent =
+                                        new Intent(MainActivity.this, HistoryActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                break;
+                            default:
+                                break;
+                        }
+                        // Close the navigation drawer when an item is selected.
+                        menuItem.setChecked(true);
+                        drawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
+    }
+
 
     private void stationApiRequester() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -184,11 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
             return;
         }
-
         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(html);
-
-
-
         setupResult(trainScheduleArrayList);
     }
 
@@ -212,8 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             trainNum.text(),
                             trainType.text(),
                             startTime.text(),
-                            endTime.text(),
-                            System.currentTimeMillis()));
+                            endTime.text()));
         }
         return trainScheduleArrayList;
     }
@@ -225,11 +273,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
         scheduleAdapter.notifyDataSetChanged();
         listViewSchedule.setAdapter(scheduleAdapter);
-    }
-
-    private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
     }
 
     private void setupView() {
@@ -282,5 +325,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 btnEnd.setText(endStation);
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Open the navigation drawer when the home icon is selected from the toolbar.
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

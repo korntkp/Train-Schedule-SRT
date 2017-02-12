@@ -10,16 +10,14 @@ public class TrainSchedule {
     private String type;
     private String startTime;
     private String endTime;
-    private long timestamp;
 
     public TrainSchedule(String startEndStation, String number, String type, String startTime,
-                         String endTime, long timestamp) {
+                         String endTime) {
         this.StartEndStation = startEndStation;
         this.number = number;
         this.type = type;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.timestamp = timestamp;
     }
 
     public String getStartEndStation() {
@@ -62,14 +60,6 @@ public class TrainSchedule {
         this.endTime = endTime;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
     @Override
     public String toString() {
         return "TrainSchedule{" +
@@ -78,7 +68,6 @@ public class TrainSchedule {
                 ",\ntype='" + type + '\'' +
                 ",\nstartTime='" + startTime + '\'' +
                 ",\nendTime='" + endTime + '\'' +
-                ",\ntimestamp=" + timestamp +
                 "\n}";
     }
 }
