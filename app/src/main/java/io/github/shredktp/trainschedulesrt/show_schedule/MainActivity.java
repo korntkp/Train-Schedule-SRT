@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
     private static final String NO_TRAIN = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
+    public static final String START_STATION = "startStation";
+    public static final String END_STATION = "endStation";
 
     private Button btnGo;
     private Button btnStart, btnEnd;
@@ -347,5 +349,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        startStation = savedInstanceState.getString(START_STATION);
+        endStation = savedInstanceState.getString(END_STATION);
+        if (!startStation.equals("")) btnStart.setText(startStation);
+        if (!endStation.equals("")) btnEnd.setText(endStation);
+
+//        if (!startStation.equals("") && !endStation.equals(""))
+//            trainScheduleApiRequester(startStation, endStation);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(START_STATION, startStation);
+        outState.putString(END_STATION, endStation);
+        super.onSaveInstanceState(outState);
     }
 }
