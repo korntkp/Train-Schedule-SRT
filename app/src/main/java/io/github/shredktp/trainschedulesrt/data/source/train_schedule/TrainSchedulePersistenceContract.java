@@ -15,8 +15,9 @@ public class TrainSchedulePersistenceContract {
     /* Inner class that defines the table contents */
     public static abstract class TrainScheduleEntry implements BaseColumns {
         public static final String TABLE_NAME = "TrainSchedule";
-        public static final String COLUMN_NAME_ENTRY_ID = "entryid";
-        public static final String COLUMN_NAME_NAME = "name";
+        public static final String COLUMN_NAME_ENTRY_ID = "entryId";
+        public static final String COLUMN_NAME_STAR_END_STATION = "startEndStation";
+        public static final String COLUMN_NAME_NUMBER = "number";
         public static final String COLUMN_NAME_TYPE = "type";
         public static final String COLUMN_NAME_START_TIME = "startTime";
         public static final String COLUMN_NAME_END_TIME = "endTime";

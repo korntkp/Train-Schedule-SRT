@@ -9,13 +9,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ListView;
 
+import java.util.ArrayList;
+
+import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
+import io.github.shredktp.trainschedulesrt.data.PairStation;
+import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 
 public class HistoryActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    private ListView listViewPairStation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +32,14 @@ public class HistoryActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
         setupView();
+
+        ArrayList<PairStation> pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
+        setupResult(pairStationArrayList);
     }
 
     private void setupToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.history_toolbar);
+        toolbar.setTitle("History Search");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -52,10 +63,10 @@ public class HistoryActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.list_navigation_menu_item:
-                                Intent intent =
-                                        new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
+                                finish();
                                 break;
                             case R.id.statistics_navigation_menu_item:
                                 // Do nothing, we're already on that screen
@@ -72,6 +83,12 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void setupView() {
+        listViewPairStation = (ListView) findViewById(R.id.list_view_history);
+    }
+
+    private void setupResult(ArrayList<PairStation> pairStationArrayList) {
+        PairStationAdapter pairStationAdapter = new PairStationAdapter(Contextor.getInstance().getContext(), pairStationArrayList);
+        listViewPairStation.setAdapter(pairStationAdapter);
     }
 
     @Override

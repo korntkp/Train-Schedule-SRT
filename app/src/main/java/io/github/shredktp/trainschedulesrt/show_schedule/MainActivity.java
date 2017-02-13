@@ -31,9 +31,12 @@ import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.api_srt.ApiSrt;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
+import io.github.shredktp.trainschedulesrt.data.PairStation;
 import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainScheduleLocalDataSource;
 import io.github.shredktp.trainschedulesrt.history_search.HistoryActivity;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
 import retrofit2.Call;
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
         }
+
+        // TODO: 13-Feb-17
     }
 
     private void setupToolbar() {
@@ -126,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
-
 
     private void stationApiRequester() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -197,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .execute(stationArrayList);
     }
 
-    private void trainScheduleApiRequester(String startStation, String endStation) {
+    private void trainScheduleApiRequester(final String startStation, final String endStation) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_SRT_CHECK_TIME)
                 .addConverterFactory(new ToStringConverterFactory())
@@ -211,7 +215,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     String result = response.body();
-                    trainScheduleParser(result);
+                    Log.d(TAG, "onResponse: ");
+                    trainScheduleParser(startStation, endStation, result);
                 } else {
                     Log.d(TAG, "onResponse not successful: " + response.body());
                     Log.d(TAG, "onResponse not successful: " + response.errorBody());
@@ -229,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void trainScheduleParser(String html) {
+    private void trainScheduleParser(String startStation, String endStation, String html) {
         if (html.contains(NO_TRAIN)) {
             listViewSchedule.setVisibility(View.GONE);
             linearLayoutDetail.setVisibility(View.VISIBLE);
@@ -237,12 +242,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
             return;
         }
-        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(html);
+        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation.concat(endStation), html);
+
+        PairStation pairStation = new PairStation(startStation, endStation, false, System.currentTimeMillis());
+        PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
+
+        // TODO: 13-Feb-17 If exist -> update
+        TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
         setupResult(trainScheduleArrayList);
     }
 
     @NonNull
-    private ArrayList<TrainSchedule> scheduleExtractor(String html) {
+    private ArrayList<TrainSchedule> scheduleExtractor(String station, String html) {
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(1);
@@ -257,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Element startTime = tr.select("div").get(3);
             Element endTime = tr.select("div").get(4);
             trainScheduleArrayList.add(
-                    new TrainSchedule((startStation.concat(endStation)),
+                    new TrainSchedule(station,
                             trainNum.text(),
                             trainType.text(),
                             startTime.text(),

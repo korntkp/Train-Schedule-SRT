@@ -1,14 +1,24 @@
 package io.github.shredktp.trainschedulesrt.data.source.train_schedule;
 
+import java.util.ArrayList;
+
+import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
+
 /**
  * Created by Korshreddern on 07-Feb-17.
  */
 
 public interface TrainScheduleDataSource {
 
-    // TODO: 10-Feb-17 Add 1)Bookmark 2)Star
+    long add(TrainSchedule trainSchedule);
+    long add(ArrayList<TrainSchedule> trainScheduleArrayList);
 
     // TODO: 10-Feb-17 Update
-    // TODO: 10-Feb-17 Query
-    // TODO: 10-Feb-17 Delete
+
+    ArrayList<TrainSchedule> getTrainScheduleByStation(String startEndStation);
+    ArrayList<TrainSchedule> getTrainScheduleByIsFirst();
+    ArrayList<TrainSchedule> getAllTrainSchedule();
+
+    long deleteAll();
+    long deleteStar();
 }

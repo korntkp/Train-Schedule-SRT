@@ -15,9 +15,10 @@ public class PairStationPersistenceContract {
     /* Inner class that defines the table contents */
     public static abstract class PairStationEntry implements BaseColumns {
         public static final String TABLE_NAME = "PairStation";
-        public static final String COLUMN_NAME_ENTRY_ID = "entryid";
-        public static final String COLUMN_NAME_START = "start";
-        public static final String COLUMN_NAME_END = "end";
-        public static final String COLUMN_NAME_IS_FIRST = "isfirst";
+        public static final String COLUMN_NAME_ENTRY_ID = "entryId";
+        public static final String COLUMN_NAME_START_STATION = "startStation";
+        public static final String COLUMN_NAME_END_STATION = "endStation";
+        public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
+        public static final String COLUMN_NAME_IS_FIRST = "isFirst";
     }
 }
