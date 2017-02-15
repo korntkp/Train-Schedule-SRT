@@ -14,7 +14,7 @@ import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainSched
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "srtDb.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -38,11 +38,12 @@ public class DbHelper extends SQLiteOpenHelper {
             TrainScheduleEntry.COLUMN_NAME_END_TIME);
 
     private String createTablePairStation = String.format("CREATE TABLE %s " +
-                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
+                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER);",
             PairStationEntry.TABLE_NAME,
             PairStationEntry.COLUMN_NAME_ENTRY_ID,
             PairStationEntry.COLUMN_NAME_START_STATION,
             PairStationEntry.COLUMN_NAME_END_STATION,
+            PairStationEntry.COLUMN_NAME_COUNT,
             PairStationEntry.COLUMN_NAME_IS_FIRST,
             PairStationEntry.COLUMN_NAME_TIMESTAMP);
 

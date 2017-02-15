@@ -17,9 +17,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/list_navigation_menu_item"
+        android:id="@+id/main_navigation_menu_item"
         android:title="@string/navigation_main" />
     <item
-        android:id="@+id/statistics_navigation_menu_item"
+        android:id="@+id/history_navigation_menu_item"
         android:title="@string/navigation_history" />
+    <item
+        android:id="@+id/setting_navigation_menu_item"
+        android:title="@string/navigation_setting" />
 </menu>

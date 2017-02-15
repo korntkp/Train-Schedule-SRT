@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".select_station.SelectStationActivity" />
-        <activity android:name=".history_search.HistoryActivity"></activity>
+        <activity android:name=".history_search.HistoryActivity" />
+        <activity android:name=".offline_schedule.OfflineScheduleActivity"></activity>
     </application>
 
 </manifest>

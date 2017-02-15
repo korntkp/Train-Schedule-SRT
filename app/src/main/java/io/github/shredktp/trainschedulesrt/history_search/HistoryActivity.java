@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -17,12 +19,14 @@ import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.PairStation;
 import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.offline_schedule.OfflineScheduleActivity;
 import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 
 public class HistoryActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ListView listViewPairStation;
+    private ArrayList<PairStation> pairStationArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +36,22 @@ public class HistoryActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
         setupView();
+        setupListViewListener();
 
-        ArrayList<PairStation> pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
+        pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
         setupResult(pairStationArrayList);
+    }
+
+    private void setupListViewListener() {
+        listViewPairStation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
+                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
+                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -62,14 +79,16 @@ public class HistoryActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
-                            case R.id.list_navigation_menu_item:
+                            case R.id.main_navigation_menu_item:
                                 Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();
                                 break;
-                            case R.id.statistics_navigation_menu_item:
+                            case R.id.history_navigation_menu_item:
                                 // Do nothing, we're already on that screen
+                                break;
+                            case R.id.setting_navigation_menu_item:
                                 break;
                             default:
                                 break;

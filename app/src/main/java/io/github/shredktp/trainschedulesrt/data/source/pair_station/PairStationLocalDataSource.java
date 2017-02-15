@@ -41,6 +41,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PairStationEntry.COLUMN_NAME_START_STATION, pairStation.getStartStation());
         contentValues.put(PairStationEntry.COLUMN_NAME_END_STATION, pairStation.getEndStation());
+        contentValues.put(PairStationEntry.COLUMN_NAME_COUNT, pairStation.getCount());
         contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, pairStation.isSeeItFirst());
         contentValues.put(PairStationEntry.COLUMN_NAME_TIMESTAMP, pairStation.getTimestamp());
         long result = sqLiteDatabase.insert(PairStationEntry.TABLE_NAME, null, contentValues);
@@ -51,7 +52,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
     @Override
     public PairStation getSeeFirstPairStation() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         String queryPairStation = String.format("SELECT * FROM %s WHERE %s == %s",
                 PairStationEntry.TABLE_NAME,
@@ -71,6 +72,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         PairStation pairStationResult = new PairStation(
                 cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION)),
                 cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION)),
+                cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_COUNT)),
                 Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST))),
                 cursor.getLong(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_TIMESTAMP))
         );
@@ -82,7 +84,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
     @Override
     public ArrayList<PairStation> getAllPairStation() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ArrayList<PairStation> pairStationArrayList = new ArrayList<>();
 
@@ -104,6 +106,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
                     new PairStation(
                             cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION)),
                             cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION)),
+                            cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_COUNT)),
                             Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST))),
                             cursor.getLong(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_TIMESTAMP))
                     ));

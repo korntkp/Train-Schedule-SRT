@@ -7,12 +7,14 @@ package io.github.shredktp.trainschedulesrt.data;
 public class PairStation {
     private String startStation;
     private String endStation;
+    private int count;
     private boolean isSeeItFirst;
     private long timestamp;
 
-    public PairStation(String startStation, String endStation, boolean isSeeItFirst, long timestamp) {
+    public PairStation(String startStation, String endStation, int count, boolean isSeeItFirst, long timestamp) {
         this.startStation = startStation;
         this.endStation = endStation;
+        this.count = count;
         this.isSeeItFirst = isSeeItFirst;
         this.timestamp = timestamp;
     }
@@ -27,6 +29,14 @@ public class PairStation {
 
     public String getEndStation() {
         return endStation;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public void setEndStation(String endStation) {
@@ -54,6 +64,7 @@ public class PairStation {
         return "PairStation{" +
                 "\nstartStation='" + startStation + '\'' +
                 ",\nendStation='" + endStation + '\'' +
+                ",\ncount='" + count + '\'' +
                 ",\nisSeeItFirst=" + isSeeItFirst +
                 ",\ntimestamp=" + timestamp +
                 "\n}";

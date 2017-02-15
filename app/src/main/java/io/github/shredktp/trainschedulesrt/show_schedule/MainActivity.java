@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate: MainActivity");
         setContentView(R.layout.activity_main);
 
         setupToolbar();
@@ -114,14 +115,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
-                            case R.id.list_navigation_menu_item:
+                            case R.id.main_navigation_menu_item:
                                 // Do nothing, we're already on that screen
                                 break;
-                            case R.id.statistics_navigation_menu_item:
+                            case R.id.history_navigation_menu_item:
                                 Intent intent =
                                         new Intent(MainActivity.this, HistoryActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
+                                break;
+                            case R.id.setting_navigation_menu_item:
                                 break;
                             default:
                                 break;
@@ -246,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation.concat(endStation), html);
 
-        PairStation pairStation = new PairStation(startStation, endStation, false, System.currentTimeMillis());
+        PairStation pairStation = new PairStation(startStation, endStation, 1, false, System.currentTimeMillis());
         PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
 
         // TODO: 13-Feb-17 If exist -> update

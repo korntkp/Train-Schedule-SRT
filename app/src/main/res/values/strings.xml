@@ -6,4 +6,5 @@
     <string name="search_hint">Station name</string>
     <string name="navigation_main">Main</string>
     <string name="navigation_history">History</string>
+    <string name="navigation_setting">Setting</string>
 </resources>

@@ -18,6 +18,7 @@ public class PairStationPersistenceContract {
         public static final String COLUMN_NAME_ENTRY_ID = "entryId";
         public static final String COLUMN_NAME_START_STATION = "startStation";
         public static final String COLUMN_NAME_END_STATION = "endStation";
+        public static final String COLUMN_NAME_COUNT = "count";
         public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
         public static final String COLUMN_NAME_IS_FIRST = "isFirst";
     }
