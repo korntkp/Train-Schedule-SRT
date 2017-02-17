@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                 .countStation();
-        if (countStation <= 0) {
+        if (countStation <= 600) { //680
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
         }
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PairStation pairStation = new PairStation(startStation, endStation, 1, false, System.currentTimeMillis());
         PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
 
-        // TODO: 13-Feb-17 If exist -> update
+        // TODO: 13-Feb-17 If exist -> update !!!!!!!!!!!!!!!!!!
         TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
         setupResult(trainScheduleArrayList);
     }
