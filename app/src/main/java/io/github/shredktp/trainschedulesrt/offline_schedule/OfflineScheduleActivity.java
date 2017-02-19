@@ -1,11 +1,10 @@
 package io.github.shredktp.trainschedulesrt.offline_schedule;
 
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,10 @@ import io.github.shredktp.trainschedulesrt.show_schedule.ScheduleAdapter;
 
 public class OfflineScheduleActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
+    private static final String TOOLBAR_TITLE = "Train Schedule";
+    private static final String EXTRA_START_STATION = "startStation";
+    private static final String EXTRA_END_STATION = "endStation";
+
     private ListView offlineListViewSchedule;
     private Toolbar toolbar;
     private ArrayList<TrainSchedule> trainScheduleArrayList;
@@ -27,13 +29,11 @@ public class OfflineScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline_schedule);
 
-        String startStation = getIntent().getStringExtra("startStation");
-        String endStation = getIntent().getStringExtra("endStation");
-        Toast.makeText(this, startStation + " " + endStation, Toast.LENGTH_SHORT).show();
+        String startStation = getIntent().getStringExtra(EXTRA_START_STATION);
+        String endStation = getIntent().getStringExtra(EXTRA_END_STATION);
 
-        setupToolbar();
-//        setupNavigationDrawer();
         setupView();
+        setupToolbar();
         setupData(startStation, endStation);
         setupListView();
     }
@@ -48,9 +48,13 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        toolbar.setTitle(TOOLBAR_TITLE);
         setSupportActionBar(toolbar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 
     private void setupListView() {

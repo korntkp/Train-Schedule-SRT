@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".select_station.SelectStationActivity" />
         <activity android:name=".history_search.HistoryActivity" />
-        <activity android:name=".offline_schedule.OfflineScheduleActivity" />
+        <activity android:name=".offline_schedule.OfflineScheduleActivity"
+            android:parentActivityName=".history_search.HistoryActivity"/>
     </application>
 
 </manifest>

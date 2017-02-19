@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.source.DbHelper;
-
 import io.github.shredktp.trainschedulesrt.data.source.station.StationPersistenceContract.StationEntry;
 
 /**
@@ -36,18 +35,22 @@ public class StationLocalDataSource implements StationDataSource {
 
     @Override
     public int countStation() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
-        String queryStation = String.format("SELECT * FROM %s",
-                StationPersistenceContract.StationEntry.TABLE_NAME);
+        String[] projection = {
+                StationEntry.COLUMN_NAME_NAME,
+                StationEntry.COLUMN_NAME_LINE
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        Cursor cursor = sqLiteDatabase.query(StationEntry.TABLE_NAME, projection, null, null, null,
+                null, null);
         cursor.moveToFirst();
 
         int countStation = cursor.getCount();
 
         cursor.close();
         sqLiteDatabase.close();
+        dbHelper.close();
         return countStation;
     }
 
@@ -116,10 +119,13 @@ public class StationLocalDataSource implements StationDataSource {
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
 
-        String queryStation = String.format("SELECT * FROM %s",
-                StationEntry.TABLE_NAME);
+        String[] projection = {
+                StationEntry.COLUMN_NAME_NAME,
+                StationEntry.COLUMN_NAME_LINE
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        Cursor cursor = sqLiteDatabase.query(StationEntry.TABLE_NAME, projection, null, null, null,
+                null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();

@@ -72,23 +72,23 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
     @Override
     public ArrayList<TrainSchedule> getTrainScheduleByStation(String startStation, String endStation) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
-
         ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
 
-        String queryTrainSchedule = String.format("SELECT * FROM %s WHERE %s LIKE \'%s\' AND %s LIKE \'%s\'",
-                TrainScheduleEntry.TABLE_NAME,
+        String[] projection = {
                 TrainScheduleEntry.COLUMN_NAME_START_STATION,
-                startStation,
                 TrainScheduleEntry.COLUMN_NAME_END_STATION,
-                endStation);
+                TrainScheduleEntry.COLUMN_NAME_NUMBER,
+                TrainScheduleEntry.COLUMN_NAME_TYPE,
+                TrainScheduleEntry.COLUMN_NAME_START_TIME,
+                TrainScheduleEntry.COLUMN_NAME_END_TIME
+        };
 
-//        String queryTrainSchedule = String.format("SELECT * FROM %s",
-//                TrainScheduleEntry.TABLE_NAME);
+        String selection = TrainScheduleEntry.COLUMN_NAME_START_STATION + " LIKE ? AND " +
+                TrainScheduleEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+        String[] selectionArgs = { startStation, endStation };
 
-        Log.d(TAG, "getTrainScheduleByStation: " + queryTrainSchedule);
-
-        Cursor cursor = sqLiteDatabase.rawQuery(queryTrainSchedule, null);
-//        Cursor cursor = sqLiteDatabase.query();
+        Cursor cursor = sqLiteDatabase.query(TrainScheduleEntry.TABLE_NAME, projection, selection,
+                selectionArgs, null, null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
@@ -127,10 +127,17 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
 
         ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
 
-        String queryTrainSchedule = String.format("SELECT * FROM %s",
-                TrainScheduleEntry.TABLE_NAME);
+        String[] projection = {
+                TrainScheduleEntry.COLUMN_NAME_START_STATION,
+                TrainScheduleEntry.COLUMN_NAME_END_STATION,
+                TrainScheduleEntry.COLUMN_NAME_NUMBER,
+                TrainScheduleEntry.COLUMN_NAME_TYPE,
+                TrainScheduleEntry.COLUMN_NAME_START_TIME,
+                TrainScheduleEntry.COLUMN_NAME_END_TIME,
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryTrainSchedule, null);
+        Cursor cursor = sqLiteDatabase.query(TrainScheduleEntry.TABLE_NAME, projection, null,
+                null, null, null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();

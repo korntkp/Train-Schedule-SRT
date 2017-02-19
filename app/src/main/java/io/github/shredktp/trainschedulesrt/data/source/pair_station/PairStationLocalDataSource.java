@@ -54,12 +54,19 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     public PairStation getSeeFirstPairStation() {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
-        String queryPairStation = String.format("SELECT * FROM %s WHERE %s == %s",
-                PairStationEntry.TABLE_NAME,
+        String[] projection = {
+                PairStationEntry.COLUMN_NAME_START_STATION,
+                PairStationEntry.COLUMN_NAME_END_STATION,
+                PairStationEntry.COLUMN_NAME_COUNT,
+                PairStationEntry.COLUMN_NAME_TIMESTAMP,
                 PairStationEntry.COLUMN_NAME_IS_FIRST,
-                "true");
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryPairStation, null);
+        String selection = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
+        String[] selectionArgs = { "true" };
+
+        Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, selection,
+                selectionArgs, null, null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
@@ -88,10 +95,16 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
         ArrayList<PairStation> pairStationArrayList = new ArrayList<>();
 
-        String queryStation = String.format("SELECT * FROM %s",
-                PairStationEntry.TABLE_NAME);
+        String[] projection = {
+                PairStationEntry.COLUMN_NAME_START_STATION,
+                PairStationEntry.COLUMN_NAME_END_STATION,
+                PairStationEntry.COLUMN_NAME_COUNT,
+                PairStationEntry.COLUMN_NAME_TIMESTAMP,
+                PairStationEntry.COLUMN_NAME_IS_FIRST,
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, null, null,
+                null, null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();

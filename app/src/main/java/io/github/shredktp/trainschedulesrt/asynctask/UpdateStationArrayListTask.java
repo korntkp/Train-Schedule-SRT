@@ -1,7 +1,7 @@
 package io.github.shredktp.trainschedulesrt.asynctask;
 
-import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -15,10 +15,9 @@ import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataS
 
 public class UpdateStationArrayListTask extends AsyncTask<ArrayList<Station>, Void, Void> {
 
-    private Context context;
+    private static final String TAG = "UdtStationTask";
 
-    public UpdateStationArrayListTask(Context context) {
-        this.context = context;
+    public UpdateStationArrayListTask() {
     }
 
     @Override
@@ -27,5 +26,11 @@ public class UpdateStationArrayListTask extends AsyncTask<ArrayList<Station>, Vo
 //        stationDataSource.addStation(stations[0]);
         StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).addStation(stations[0]);
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        Log.d(TAG, "onPostExecute: Finish");
     }
 }

@@ -95,8 +95,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setupNavigationDrawer() {
@@ -202,8 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addStationByArrayList(ArrayList<Station> stationArrayList) {
         Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
-        new UpdateStationArrayListTask(Contextor.getInstance().getContext())
-                .execute(stationArrayList);
+        new UpdateStationArrayListTask().execute(stationArrayList);
     }
 
     private void trainScheduleApiRequester(final String startStation, final String endStation) {
