@@ -28,10 +28,11 @@ public class DbHelper extends SQLiteOpenHelper {
             StationEntry.COLUMN_NAME_LINE);
 
     private String createTableTrainSchedule = String.format("CREATE TABLE %s " +
-                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
+                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
             TrainScheduleEntry.TABLE_NAME,
             TrainScheduleEntry.COLUMN_NAME_ENTRY_ID,
-            TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION,
+            TrainScheduleEntry.COLUMN_NAME_START_STATION,
+            TrainScheduleEntry.COLUMN_NAME_END_STATION,
             TrainScheduleEntry.COLUMN_NAME_NUMBER,
             TrainScheduleEntry.COLUMN_NAME_TYPE,
             TrainScheduleEntry.COLUMN_NAME_START_TIME,

@@ -39,7 +39,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     }
 
     private void setupData(String startStation, String endStation) {
-        trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(getApplicationContext()).getTrainScheduleByStation(startStation.concat(endStation));
+        trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(getApplicationContext()).getTrainScheduleByStation(startStation, endStation);
     }
 
     private void setupView() {
@@ -56,7 +56,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     private void setupListView() {
         ScheduleAdapter scheduleAdapter =
                 new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
-        scheduleAdapter.notifyDataSetChanged();
+//        scheduleAdapter.notifyDataSetChanged();
         offlineListViewSchedule.setAdapter(scheduleAdapter);
     }
 

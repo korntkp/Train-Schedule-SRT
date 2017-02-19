@@ -247,18 +247,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
             return;
         }
-        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation.concat(endStation), html);
+        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, html);
 
         PairStation pairStation = new PairStation(startStation, endStation, 1, false, System.currentTimeMillis());
         PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
 
         // TODO: 13-Feb-17 If exist -> update !!!!!!!!!!!!!!!!!!
-        TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+        long result = TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+        Log.d(TAG, "trainScheduleParser: add(trainScheduleArrayList " + result);
         setupResult(trainScheduleArrayList);
     }
 
     @NonNull
-    private ArrayList<TrainSchedule> scheduleExtractor(String station, String html) {
+    private ArrayList<TrainSchedule> scheduleExtractor(String startStation, String endStation, String html) {
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(1);
@@ -273,7 +274,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Element startTime = tr.select("div").get(3);
             Element endTime = tr.select("div").get(4);
             trainScheduleArrayList.add(
-                    new TrainSchedule(station,
+                    new TrainSchedule(startStation,
+                            endStation,
                             trainNum.text(),
                             trainType.text(),
                             startTime.text(),

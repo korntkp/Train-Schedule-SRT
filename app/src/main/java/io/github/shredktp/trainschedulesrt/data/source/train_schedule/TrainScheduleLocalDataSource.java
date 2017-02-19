@@ -38,7 +38,8 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION, trainSchedule.getStartEndStation());
+        contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_STATION, trainSchedule.getStartStation());
+        contentValues.put(TrainScheduleEntry.COLUMN_NAME_END_STATION, trainSchedule.getEndStation());
         contentValues.put(TrainScheduleEntry.COLUMN_NAME_NUMBER, trainSchedule.getNumber());
         contentValues.put(TrainScheduleEntry.COLUMN_NAME_TYPE, trainSchedule.getType());
         contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_TIME, trainSchedule.getStartTime());
@@ -54,8 +55,10 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         long result = 0;
         for (int i = 0; i < trainScheduleArrayList.size(); i++) {
+//            Log.d(TAG, "add: " + );
             ContentValues contentValues = new ContentValues();
-            contentValues.put(TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION, trainScheduleArrayList.get(i).getStartEndStation());
+            contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_STATION, trainScheduleArrayList.get(i).getStartStation());
+            contentValues.put(TrainScheduleEntry.COLUMN_NAME_END_STATION, trainScheduleArrayList.get(i).getEndStation());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_NUMBER, trainScheduleArrayList.get(i).getNumber());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_TYPE, trainScheduleArrayList.get(i).getType());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_TIME, trainScheduleArrayList.get(i).getStartTime());
@@ -67,17 +70,25 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
     }
 
     @Override
-    public ArrayList<TrainSchedule> getTrainScheduleByStation(String startEndStation) {
+    public ArrayList<TrainSchedule> getTrainScheduleByStation(String startStation, String endStation) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
 
         ArrayList<TrainSchedule> trainScheduleArrayList = new ArrayList<>();
 
-        String queryTrainSchedule = String.format("SELECT * FROM %s WHERE %s == %s",
+        String queryTrainSchedule = String.format("SELECT * FROM %s WHERE %s LIKE \'%s\' AND %s LIKE \'%s\'",
                 TrainScheduleEntry.TABLE_NAME,
-                TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION,
-                startEndStation);
+                TrainScheduleEntry.COLUMN_NAME_START_STATION,
+                startStation,
+                TrainScheduleEntry.COLUMN_NAME_END_STATION,
+                endStation);
+
+//        String queryTrainSchedule = String.format("SELECT * FROM %s",
+//                TrainScheduleEntry.TABLE_NAME);
+
+        Log.d(TAG, "getTrainScheduleByStation: " + queryTrainSchedule);
 
         Cursor cursor = sqLiteDatabase.rawQuery(queryTrainSchedule, null);
+//        Cursor cursor = sqLiteDatabase.query();
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
@@ -90,7 +101,8 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         while (!cursor.isAfterLast()) {
             trainScheduleArrayList.add(
                     new TrainSchedule(
-                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION)),
+                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_START_STATION)),
+                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_END_STATION)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_NUMBER)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_TYPE)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_START_TIME)),
@@ -131,7 +143,8 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         while (!cursor.isAfterLast()) {
             trainScheduleArrayList.add(
                     new TrainSchedule(
-                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_STAR_END_STATION)),
+                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_START_STATION)),
+                            cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_END_STATION)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_NUMBER)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_TYPE)),
                             cursor.getString(cursor.getColumnIndex(TrainScheduleEntry.COLUMN_NAME_START_TIME)),

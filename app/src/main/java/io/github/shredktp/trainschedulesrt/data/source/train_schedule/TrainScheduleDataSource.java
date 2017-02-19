@@ -15,7 +15,7 @@ public interface TrainScheduleDataSource {
 
     // TODO: 10-Feb-17 Update
 
-    ArrayList<TrainSchedule> getTrainScheduleByStation(String startEndStation);
+    ArrayList<TrainSchedule> getTrainScheduleByStation(String startStation, String endStation);
     ArrayList<TrainSchedule> getTrainScheduleByIsFirst();
     ArrayList<TrainSchedule> getAllTrainSchedule();
 
