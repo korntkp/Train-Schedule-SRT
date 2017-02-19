@@ -28,25 +28,32 @@ public class DbHelper extends SQLiteOpenHelper {
             StationEntry.COLUMN_NAME_LINE);
 
     private String createTableTrainSchedule = String.format("CREATE TABLE %s " +
-                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
+                    "(%s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, PRIMARY KEY (%s, %s, %s));",
             TrainScheduleEntry.TABLE_NAME,
-            TrainScheduleEntry.COLUMN_NAME_ENTRY_ID,
+//            TrainScheduleEntry.COLUMN_NAME_ENTRY_ID,
             TrainScheduleEntry.COLUMN_NAME_START_STATION,
             TrainScheduleEntry.COLUMN_NAME_END_STATION,
             TrainScheduleEntry.COLUMN_NAME_NUMBER,
             TrainScheduleEntry.COLUMN_NAME_TYPE,
             TrainScheduleEntry.COLUMN_NAME_START_TIME,
-            TrainScheduleEntry.COLUMN_NAME_END_TIME);
+            TrainScheduleEntry.COLUMN_NAME_END_TIME,
+
+            TrainScheduleEntry.COLUMN_NAME_START_STATION,
+            TrainScheduleEntry.COLUMN_NAME_END_STATION,
+            TrainScheduleEntry.COLUMN_NAME_NUMBER);
 
     private String createTablePairStation = String.format("CREATE TABLE %s " +
-                    "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER);",
+                    "(%s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER, PRIMARY KEY (%s, %s));",
             PairStationEntry.TABLE_NAME,
-            PairStationEntry.COLUMN_NAME_ENTRY_ID,
+//            PairStationEntry.COLUMN_NAME_ENTRY_ID,
             PairStationEntry.COLUMN_NAME_START_STATION,
             PairStationEntry.COLUMN_NAME_END_STATION,
             PairStationEntry.COLUMN_NAME_COUNT,
             PairStationEntry.COLUMN_NAME_IS_FIRST,
-            PairStationEntry.COLUMN_NAME_TIMESTAMP);
+            PairStationEntry.COLUMN_NAME_TIMESTAMP,
+
+            PairStationEntry.COLUMN_NAME_START_STATION,
+            PairStationEntry.COLUMN_NAME_END_STATION);
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {

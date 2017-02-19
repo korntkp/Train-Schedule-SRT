@@ -37,14 +37,13 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     @Override
     public long add(PairStation pairStation) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
-
         ContentValues contentValues = new ContentValues();
         contentValues.put(PairStationEntry.COLUMN_NAME_START_STATION, pairStation.getStartStation());
         contentValues.put(PairStationEntry.COLUMN_NAME_END_STATION, pairStation.getEndStation());
         contentValues.put(PairStationEntry.COLUMN_NAME_COUNT, pairStation.getCount());
         contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, pairStation.isSeeItFirst());
         contentValues.put(PairStationEntry.COLUMN_NAME_TIMESTAMP, pairStation.getTimestamp());
-        long result = sqLiteDatabase.insert(PairStationEntry.TABLE_NAME, null, contentValues);
+        long result = sqLiteDatabase.insertWithOnConflict(PairStationEntry.TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
 
         sqLiteDatabase.close();
         return result;

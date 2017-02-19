@@ -55,7 +55,6 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         long result = 0;
         for (int i = 0; i < trainScheduleArrayList.size(); i++) {
-//            Log.d(TAG, "add: " + );
             ContentValues contentValues = new ContentValues();
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_STATION, trainScheduleArrayList.get(i).getStartStation());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_END_STATION, trainScheduleArrayList.get(i).getEndStation());
@@ -63,7 +62,7 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_TYPE, trainScheduleArrayList.get(i).getType());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_START_TIME, trainScheduleArrayList.get(i).getStartTime());
             contentValues.put(TrainScheduleEntry.COLUMN_NAME_END_TIME, trainScheduleArrayList.get(i).getEndTime());
-            result += sqLiteDatabase.insert(TrainScheduleEntry.TABLE_NAME, null, contentValues);
+            result += sqLiteDatabase.insertWithOnConflict(TrainScheduleEntry.TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         }
         sqLiteDatabase.close();
         return result;

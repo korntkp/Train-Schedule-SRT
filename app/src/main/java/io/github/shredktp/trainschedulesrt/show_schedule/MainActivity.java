@@ -251,11 +251,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, html);
 
         PairStation pairStation = new PairStation(startStation, endStation, 1, false, System.currentTimeMillis());
-        PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
 
-        // TODO: 13-Feb-17 If exist -> update !!!!!!!!!!!!!!!!!!
-        long result = TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
-        Log.d(TAG, "trainScheduleParser: add(trainScheduleArrayList " + result);
+        /*long addPairResult = */PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
+        /*long result = */TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+
         setupResult(trainScheduleArrayList);
     }
 
@@ -302,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        tvStation = (TextView) findViewById(R.id.tv_station);
         listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
         linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
-
 
         btnGo.setOnClickListener(this);
         btnStart.setOnClickListener(this);
