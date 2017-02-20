@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -47,6 +49,7 @@ import retrofit2.Retrofit;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_end;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_start;
+import static io.github.shredktp.trainschedulesrt.R.id.fab_see_it_first;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.EXTRA_KEY_REQUEST_CODE;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.INTENT_EXTRA_KEY_STATION;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.REQUEST_CODE_END_STATION;
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button btnGo;
     private Button btnStart, btnEnd;
+    private FloatingActionButton fabSeeItFirst;
 
     private ListView listViewSchedule;
     private LinearLayout linearLayoutDetail;
@@ -86,9 +90,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (countStation <= 600) { //680
             Log.d(TAG, "onCreate: Setup Station");
             stationApiRequester();
+        } else {
+            setupSeeItFirst();
+        }
+    }
+
+    private void setupSeeItFirst() {
+        PairStation pairStation = null;
+        try {
+            pairStation = PairStationLocalDataSource
+                    .getInstance(Contextor.getInstance().getContext()).getSeeFirstPairStation();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
 
-        // TODO: 13-Feb-17
+        ArrayList<TrainSchedule> trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
+        setupResult(trainScheduleArrayList);
     }
 
     private void setupToolbar() {
@@ -109,6 +127,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
+    }
+
+    private void setupView() {
+        btnGo = (Button) findViewById(btn_go);
+        btnStart = (Button) findViewById(btn_start);
+        btnEnd = (Button) findViewById(btn_end);
+        tvDetail = (TextView) findViewById(R.id.tv_detail);
+        fabSeeItFirst = (FloatingActionButton) findViewById(fab_see_it_first);
+
+        listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
+        linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
+
+        btnGo.setOnClickListener(this);
+        btnStart.setOnClickListener(this);
+        btnEnd.setOnClickListener(this);
+        fabSeeItFirst.setOnClickListener(this);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -250,10 +284,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, html);
 
-        PairStation pairStation = new PairStation(startStation, endStation, 1, false, System.currentTimeMillis());
+        PairStation pairStation = new PairStation(startStation, endStation, 1, 0, System.currentTimeMillis());
 
-        /*long addPairResult = */PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
-        /*long result = */TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+        /*long addPairResult = */
+        PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
+        /*long result = */
+        TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
 
         setupResult(trainScheduleArrayList);
     }
@@ -293,20 +329,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listViewSchedule.setAdapter(scheduleAdapter);
     }
 
-    private void setupView() {
-        btnGo = (Button) findViewById(btn_go);
-        btnStart = (Button) findViewById(btn_start);
-        btnEnd = (Button) findViewById(btn_end);
-        tvDetail = (TextView) findViewById(R.id.tv_detail);
-//        tvStation = (TextView) findViewById(R.id.tv_station);
-        listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
-        linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
-
-        btnGo.setOnClickListener(this);
-        btnStart.setOnClickListener(this);
-        btnEnd.setOnClickListener(this);
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -324,6 +346,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case btn_go: {
                 trainScheduleApiRequester(startStation, endStation);
+                break;
+            }
+            case fab_see_it_first: {
+                PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
+                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .updateSeeItFirst(pairStation);
+                Snackbar.make(view, "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
                 break;
             }
         }

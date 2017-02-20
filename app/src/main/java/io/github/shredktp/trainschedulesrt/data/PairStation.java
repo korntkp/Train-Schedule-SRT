@@ -8,10 +8,10 @@ public class PairStation {
     private String startStation;
     private String endStation;
     private int count;
-    private boolean isSeeItFirst;
+    private int isSeeItFirst;
     private long timestamp;
 
-    public PairStation(String startStation, String endStation, int count, boolean isSeeItFirst, long timestamp) {
+    public PairStation(String startStation, String endStation, int count, int isSeeItFirst, long timestamp) {
         this.startStation = startStation;
         this.endStation = endStation;
         this.count = count;
@@ -43,11 +43,11 @@ public class PairStation {
         this.endStation = endStation;
     }
 
-    public boolean isSeeItFirst() {
+    public int isSeeItFirst() {
         return isSeeItFirst;
     }
 
-    public void setSeeItFirst(boolean seeItFirst) {
+    public void setSeeItFirst(int seeItFirst) {
         isSeeItFirst = seeItFirst;
     }
 

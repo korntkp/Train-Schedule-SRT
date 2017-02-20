@@ -50,7 +50,37 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
-    public PairStation getSeeFirstPairStation() {
+    public long updateSeeItFirst(PairStation pairStation) {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        long clearSeeItFirstResult = clearSeeItFirst(sqLiteDatabase);
+        Log.d(TAG, "updateSeeItFirst clearSeeItFirstResult: " + clearSeeItFirstResult);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, pairStation.isSeeItFirst());
+
+        String whereCause = PairStationEntry.COLUMN_NAME_START_STATION + " LIKE ? AND " +
+                PairStationEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+        String[] whereArgs = {pairStation.getStartStation(), pairStation.getEndStation()};
+
+        long result = sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereCause, whereArgs);
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    private long clearSeeItFirst(SQLiteDatabase sqLiteDatabase) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, false);
+
+        String whereCause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
+        String[] whereArgs = { String.valueOf(1) };
+
+        return sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereCause, whereArgs);
+    }
+
+    @Override
+    public PairStation getSeeFirstPairStation() throws Exception {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         String[] projection = {
@@ -62,7 +92,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         };
 
         String selection = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] selectionArgs = { "true" };
+        String[] selectionArgs = { String.valueOf(1) };
 
         Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, selection,
                 selectionArgs, null, null, null);
@@ -73,13 +103,14 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
         if (countCursor == 0) {
             Log.w(TAG, "getSeeFirstPairStation: No item in PairStation Table");
+            throw new Exception("No item in PairStation Table");
         }
 
         PairStation pairStationResult = new PairStation(
                 cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION)),
                 cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION)),
                 cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_COUNT)),
-                Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST))),
+                cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST)),
                 cursor.getLong(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_TIMESTAMP))
         );
 
@@ -119,7 +150,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
                             cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION)),
                             cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION)),
                             cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_COUNT)),
-                            Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST))),
+                            cursor.getInt(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST)),
                             cursor.getLong(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_TIMESTAMP))
                     ));
             cursor.moveToNext();

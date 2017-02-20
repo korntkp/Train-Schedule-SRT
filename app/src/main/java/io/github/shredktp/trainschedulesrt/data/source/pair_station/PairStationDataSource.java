@@ -12,7 +12,9 @@ public interface PairStationDataSource {
 
     long add(PairStation pairStation);
 
-    PairStation getSeeFirstPairStation();
+    long updateSeeItFirst(PairStation pairStation);
+
+    PairStation getSeeFirstPairStation() throws Exception;
     ArrayList<PairStation> getAllPairStation();
 
     long deleteAll();
