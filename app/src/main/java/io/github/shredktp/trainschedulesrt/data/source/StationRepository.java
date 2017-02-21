@@ -54,4 +54,9 @@ public class StationRepository implements StationDataSource {
     public ArrayList<Station> searchStation(String piecesOfStation) {
         return null;
     }
+
+    @Override
+    public int deleteAllStation() {
+        return 0;
+    }
 }

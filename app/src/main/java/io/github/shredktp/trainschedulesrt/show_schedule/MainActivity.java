@@ -59,9 +59,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "MainActivity";
     private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
-    private static final String NO_TRAIN = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
+    private static final String NO_SCHEDULE = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
     public static final String START_STATION = "startStation";
     public static final String END_STATION = "endStation";
+    private static final int COUNT_ALL_STATION = 670;
 
     private Button btnGo;
     private Button btnStart, btnEnd;
@@ -87,8 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                 .countStation();
-        if (countStation <= 600) { //680
+        if (countStation <= COUNT_ALL_STATION) { //680
             Log.d(TAG, "onCreate: Setup Station");
+            // TODO: 21-Feb-17 Clear All Station
             stationApiRequester();
         } else {
             setupSeeItFirst();
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         ArrayList<TrainSchedule> trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
-        setupResult(trainScheduleArrayList);
+        setupScheduleResult(trainScheduleArrayList);
     }
 
     private void setupToolbar() {
@@ -199,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-                Toast.makeText(MainActivity.this, NO_TRAIN, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, NO_SCHEDULE, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -238,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addStationByArrayList(ArrayList<Station> stationArrayList) {
         Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
+        // TODO: 21-Feb-17 Take a long time !!!
         new UpdateStationArrayListTask().execute(stationArrayList);
     }
 
@@ -254,9 +257,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
-                    String result = response.body();
-                    Log.d(TAG, "onResponse: ");
-                    trainScheduleParser(startStation, endStation, result);
+                    String responseBody = response.body();
+                    if (responseBody.contains(NO_SCHEDULE)) {
+                        setupNoScheduleResult();
+                    } else {
+                        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, responseBody);
+                        saveHistoryAndSchedule(trainScheduleArrayList);
+                        setupScheduleResult(trainScheduleArrayList);
+                    }
                 } else {
                     Log.d(TAG, "onResponse not successful: " + response.body());
                     Log.d(TAG, "onResponse not successful: " + response.errorBody());
@@ -267,31 +275,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
-                listViewSchedule.setVisibility(View.GONE);
-                linearLayoutDetail.setVisibility(View.VISIBLE);
-                tvDetail.setText(NO_TRAIN);
+                setupNoScheduleResult();
             }
         });
     }
 
-    private void trainScheduleParser(String startStation, String endStation, String html) {
-        if (html.contains(NO_TRAIN)) {
-            listViewSchedule.setVisibility(View.GONE);
-            linearLayoutDetail.setVisibility(View.VISIBLE);
-            tvDetail.setText(NO_TRAIN);
-            Toast.makeText(this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, html);
-
+    private void saveHistoryAndSchedule(ArrayList<TrainSchedule> trainScheduleArrayList) {
         PairStation pairStation = new PairStation(startStation, endStation, 1, 0, System.currentTimeMillis());
-
-        /*long addPairResult = */
         PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
-        /*long result = */
         TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+    }
 
-        setupResult(trainScheduleArrayList);
+    private void setupScheduleResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
+        linearLayoutDetail.setVisibility(View.GONE);
+        listViewSchedule.setVisibility(View.VISIBLE);
+        ScheduleAdapter scheduleAdapter =
+                new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
+        scheduleAdapter.notifyDataSetChanged();
+        listViewSchedule.setAdapter(scheduleAdapter);
+    }
+
+    private void setupNoScheduleResult() {
+        listViewSchedule.setVisibility(View.GONE);
+        linearLayoutDetail.setVisibility(View.VISIBLE);
+        tvDetail.setText(NO_SCHEDULE);
+        Toast.makeText(MainActivity.this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -318,15 +326,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             endTime.text()));
         }
         return trainScheduleArrayList;
-    }
-
-    private void setupResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
-        linearLayoutDetail.setVisibility(View.GONE);
-        listViewSchedule.setVisibility(View.VISIBLE);
-        ScheduleAdapter scheduleAdapter =
-                new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
-        scheduleAdapter.notifyDataSetChanged();
-        listViewSchedule.setAdapter(scheduleAdapter);
     }
 
     @Override

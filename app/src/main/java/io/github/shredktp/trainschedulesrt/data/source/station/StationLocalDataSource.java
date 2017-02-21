@@ -196,4 +196,12 @@ public class StationLocalDataSource implements StationDataSource {
         sqLiteDatabase.close();
         return stationArrayList;
     }
+
+    @Override
+    public int deleteAllStation() {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        int result = sqLiteDatabase.delete(StationEntry.TABLE_NAME, null, null);
+        sqLiteDatabase.close();
+        return result;
+    }
 }

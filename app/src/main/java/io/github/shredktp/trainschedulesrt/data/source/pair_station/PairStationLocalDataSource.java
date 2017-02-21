@@ -162,7 +162,10 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
-    public long deleteAll() {
-        return 0;
+    public int deleteAll() {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, null, null);
+        sqLiteDatabase.close();
+        return result;
     }
 }

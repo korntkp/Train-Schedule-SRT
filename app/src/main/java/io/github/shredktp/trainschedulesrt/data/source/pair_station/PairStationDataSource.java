@@ -17,5 +17,5 @@ public interface PairStationDataSource {
     PairStation getSeeFirstPairStation() throws Exception;
     ArrayList<PairStation> getAllPairStation();
 
-    long deleteAll();
+    int deleteAll();
 }

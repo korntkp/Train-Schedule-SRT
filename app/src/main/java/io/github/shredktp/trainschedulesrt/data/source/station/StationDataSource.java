@@ -25,6 +25,6 @@ public interface StationDataSource {
 //    long updateStation(String name);
 //    long updateStation(ArrayList<Station> stationArrayList);
 
-//    long deleteAllStation();
+    int deleteAllStation();
 //    long deleteStation(String name);
 }
