@@ -22,8 +22,6 @@ public class UpdateStationArrayListTask extends AsyncTask<ArrayList<Station>, Vo
 
     @Override
     protected Void doInBackground(ArrayList<Station>... stations) {
-//        StationDataSource stationDataSource = new StationLocalDataSource(context);
-//        stationDataSource.addStation(stations[0]);
         StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).deleteAllStation();
         StationLocalDataSource.getInstance(Contextor.getInstance().getContext()).addStation(stations[0]);
         return null;

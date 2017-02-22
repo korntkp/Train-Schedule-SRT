@@ -46,9 +46,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static io.github.shredktp.trainschedulesrt.R.id.btn_end;
-import static io.github.shredktp.trainschedulesrt.R.id.btn_go;
-import static io.github.shredktp.trainschedulesrt.R.id.btn_start;
+import static io.github.shredktp.trainschedulesrt.R.id.btn_select_end_station;
+import static io.github.shredktp.trainschedulesrt.R.id.btn_see_schedule;
+import static io.github.shredktp.trainschedulesrt.R.id.btn_select_start_station;
 import static io.github.shredktp.trainschedulesrt.R.id.fab_see_it_first;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.EXTRA_KEY_REQUEST_CODE;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.INTENT_EXTRA_KEY_STATION;
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String END_STATION = "endStation";
     private static final int COUNT_ALL_STATION = 670;
 
-    private Button btnGo;
-    private Button btnStart, btnEnd;
+    private Button btnSeeSchedule;
+    private Button btnSelectStartStation, btnSelectEndStation;
     private FloatingActionButton fabSeeItFirst;
 
     private ListView listViewSchedule;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupSeeItFirst() {
-        PairStation pairStation = null;
+        PairStation pairStation;
         try {
             pairStation = PairStationLocalDataSource
                     .getInstance(Contextor.getInstance().getContext()).getSeeFirstPairStation();
@@ -132,18 +132,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupView() {
-        btnGo = (Button) findViewById(btn_go);
-        btnStart = (Button) findViewById(btn_start);
-        btnEnd = (Button) findViewById(btn_end);
+        btnSeeSchedule = (Button) findViewById(btn_see_schedule);
+        btnSelectStartStation = (Button) findViewById(btn_select_start_station);
+        btnSelectEndStation = (Button) findViewById(btn_select_end_station);
         tvDetail = (TextView) findViewById(R.id.tv_detail);
         fabSeeItFirst = (FloatingActionButton) findViewById(fab_see_it_first);
 
         listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
         linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
 
-        btnGo.setOnClickListener(this);
-        btnStart.setOnClickListener(this);
-        btnEnd.setOnClickListener(this);
+        btnSeeSchedule.setOnClickListener(this);
+        btnSelectStartStation.setOnClickListener(this);
+        btnSelectEndStation.setOnClickListener(this);
         fabSeeItFirst.setOnClickListener(this);
     }
 
@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, responseBody);
                         saveHistoryAndSchedule(trainScheduleArrayList);
                         setupScheduleResult(trainScheduleArrayList);
+                        fabSeeItFirst.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Log.d(TAG, "onResponse not successful: " + response.body());
@@ -331,19 +332,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case btn_start: {
+            case btn_select_start_station: {
+                fabSeeItFirst.setVisibility(View.GONE);
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_START_STATION);
                 startActivityForResult(intent, REQUEST_CODE_START_STATION);
                 break;
             }
-            case btn_end: {
+            case btn_select_end_station: {
+                fabSeeItFirst.setVisibility(View.GONE);
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_END_STATION);
                 startActivityForResult(intent, REQUEST_CODE_END_STATION);
                 break;
             }
-            case btn_go: {
+            case btn_see_schedule: {
                 trainScheduleApiRequester(startStation, endStation);
                 break;
             }
@@ -352,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                         .updateSeeItFirst(pairStation);
                 Snackbar.make(view, "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                fabSeeItFirst.setVisibility(View.GONE);
                 break;
             }
         }
@@ -362,12 +366,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == REQUEST_CODE_START_STATION) {
             if (resultCode == Activity.RESULT_OK) {
                 startStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
-                btnStart.setText(startStation);
+                btnSelectStartStation.setText(startStation);
             }
         } else if (requestCode == REQUEST_CODE_END_STATION) {
             if (resultCode == Activity.RESULT_OK) {
                 endStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
-                btnEnd.setText(endStation);
+                btnSelectEndStation.setText(endStation);
             }
         }
     }
@@ -387,8 +391,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         startStation = savedInstanceState.getString(START_STATION);
         endStation = savedInstanceState.getString(END_STATION);
-        if (!startStation.equals("")) btnStart.setText(startStation);
-        if (!endStation.equals("")) btnEnd.setText(endStation);
+        if (!startStation.equals("")) btnSelectStartStation.setText(startStation);
+        if (!endStation.equals("")) btnSelectEndStation.setText(endStation);
 
 //        if (!startStation.equals("") && !endStation.equals(""))
 //            trainScheduleApiRequester(startStation, endStation);
