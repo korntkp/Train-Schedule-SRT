@@ -3,6 +3,7 @@ package io.github.shredktp.trainschedulesrt.data.source;
 import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.data.Station;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationDataSource;
 
 /**
  * Created by Korshreddern on 09-Feb-17.
@@ -52,5 +53,10 @@ public class StationRepository implements StationDataSource {
     @Override
     public ArrayList<Station> searchStation(String piecesOfStation) {
         return null;
+    }
+
+    @Override
+    public int deleteAllStation() {
+        return 0;
     }
 }

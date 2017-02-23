@@ -8,14 +8,6 @@ public class Station {
     private String name;
     private String line;
 
-    public static final String STATION_TABLE_NAME = "Station";
-
-    public class Column {
-        public static final String ID = "_id";
-        public static final String NAME = "name";
-        public static final String LINE = "line";
-    }
-
     public Station() {
         this.name = "";
         this.line = "";

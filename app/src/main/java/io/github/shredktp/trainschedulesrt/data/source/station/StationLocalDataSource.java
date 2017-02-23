@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.data.source.local;
+package io.github.shredktp.trainschedulesrt.data.source.station;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,7 +9,8 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.data.Station;
-import io.github.shredktp.trainschedulesrt.data.source.StationDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.DbHelper;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationPersistenceContract.StationEntry;
 
 /**
  * Created by Korshreddern on 28-Jan-17.
@@ -34,18 +35,22 @@ public class StationLocalDataSource implements StationDataSource {
 
     @Override
     public int countStation() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
-        String queryStation = String.format("SELECT * FROM %s",
-                Station.STATION_TABLE_NAME);
+        String[] projection = {
+                StationEntry.COLUMN_NAME_NAME,
+                StationEntry.COLUMN_NAME_LINE
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        Cursor cursor = sqLiteDatabase.query(StationEntry.TABLE_NAME, projection, null, null, null,
+                null, null);
         cursor.moveToFirst();
 
         int countStation = cursor.getCount();
 
         cursor.close();
         sqLiteDatabase.close();
+        dbHelper.close();
         return countStation;
     }
 
@@ -54,9 +59,9 @@ public class StationLocalDataSource implements StationDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Station.Column.NAME, name);
-        contentValues.put(Station.Column.LINE, "");
-        long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+        contentValues.put(StationEntry.COLUMN_NAME_NAME, name);
+        contentValues.put(StationEntry.COLUMN_NAME_LINE, "");
+        long result = sqLiteDatabase.insert(StationEntry.TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
         return result;
@@ -67,9 +72,9 @@ public class StationLocalDataSource implements StationDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Station.Column.NAME, name);
-        contentValues.put(Station.Column.LINE, line);
-        long result = sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+        contentValues.put(StationEntry.COLUMN_NAME_NAME, name);
+        contentValues.put(StationEntry.COLUMN_NAME_LINE, line);
+        long result = sqLiteDatabase.insert(StationEntry.TABLE_NAME, null, contentValues);
 
         sqLiteDatabase.close();
         return result;
@@ -77,19 +82,14 @@ public class StationLocalDataSource implements StationDataSource {
 
     @Override
     public long addStation(ArrayList<Station> stationArrayList) {
-//        Log.d(TAG, "addStation: after dbhelper");
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
-//        Log.d(TAG, "addStation: after getWrite" + stationArrayList.size());
         long result = 0;
         for (int i = 0; i < stationArrayList.size(); i++) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(Station.Column.NAME, stationArrayList.get(i).getName());
-            contentValues.put(Station.Column.LINE, stationArrayList.get(i).getLine());
-            result += sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
-//            sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+            contentValues.put(StationEntry.COLUMN_NAME_NAME, stationArrayList.get(i).getName());
+            contentValues.put(StationEntry.COLUMN_NAME_LINE, stationArrayList.get(i).getLine());
+            result += sqLiteDatabase.insert(StationEntry.TABLE_NAME, null, contentValues);
         }
-//        Log.d(TAG, "addStation: after insert: " + result);
-
         sqLiteDatabase.close();
         return result;
     }
@@ -102,10 +102,10 @@ public class StationLocalDataSource implements StationDataSource {
         long result = 0;
         for (Station aStation : station) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(Station.Column.NAME, aStation.getName());
-            contentValues.put(Station.Column.LINE, aStation.getLine());
-            result += sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
-//            sqLiteDatabase.insert(Station.STATION_TABLE_NAME, null, contentValues);
+            contentValues.put(StationEntry.COLUMN_NAME_NAME, aStation.getName());
+            contentValues.put(StationEntry.COLUMN_NAME_LINE, aStation.getLine());
+            result += sqLiteDatabase.insert(StationEntry.TABLE_NAME, null, contentValues);
+//            sqLiteDatabase.insert(StationPersistenceContract.StationEntry.TABLE_NAME, null, contentValues);
         }
 //        Log.d(TAG, "addStation: after insert: " + result);
 
@@ -119,10 +119,13 @@ public class StationLocalDataSource implements StationDataSource {
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
 
-        String queryStation = String.format("SELECT * FROM %s",
-                Station.STATION_TABLE_NAME);
+        String[] projection = {
+                StationEntry.COLUMN_NAME_NAME,
+                StationEntry.COLUMN_NAME_LINE
+        };
 
-        Cursor cursor = sqLiteDatabase.rawQuery(queryStation, null);
+        Cursor cursor = sqLiteDatabase.query(StationEntry.TABLE_NAME, projection, null, null, null,
+                null, null);
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
@@ -133,7 +136,11 @@ public class StationLocalDataSource implements StationDataSource {
         }
 
         while (!cursor.isAfterLast()) {
-            stationArrayList.add(new Station(cursor.getString(cursor.getColumnIndex(Station.Column.NAME)), cursor.getString(cursor.getColumnIndex(Station.Column.LINE))));
+            stationArrayList.add(
+                    new Station(
+                            cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_NAME_NAME)),
+                            cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_NAME_LINE))
+                    ));
             cursor.moveToNext();
         }
 
@@ -158,10 +165,16 @@ public class StationLocalDataSource implements StationDataSource {
 
         ArrayList<Station> stationArrayList = new ArrayList<>();
 
-        String[] columns = new String[]{Station.Column.NAME, Station.Column.LINE};
-        String selection = Station.Column.NAME + " LIKE ?";
+        String[] columns = new String[]{
+                StationEntry.COLUMN_NAME_NAME,
+                StationPersistenceContract.StationEntry.COLUMN_NAME_LINE};
+
+        String selection = StationEntry.COLUMN_NAME_NAME + " LIKE ?";
         String[] selectionArgs = new String[]{"%" + piecesOfStation + "%"};
-        Cursor cursor = sqLiteDatabase.query(Station.STATION_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+
+        Cursor cursor = sqLiteDatabase.query(
+                StationEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+
         cursor.moveToFirst();
 
         int countCursor = cursor.getCount();
@@ -172,12 +185,23 @@ public class StationLocalDataSource implements StationDataSource {
         }
 
         while (!cursor.isAfterLast()) {
-            stationArrayList.add(new Station(cursor.getString(cursor.getColumnIndex(Station.Column.NAME)), cursor.getString(cursor.getColumnIndex(Station.Column.LINE))));
+            stationArrayList.add(new Station(
+                    cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_NAME_NAME)),
+                    cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_NAME_LINE))
+            ));
             cursor.moveToNext();
         }
 
         cursor.close();
         sqLiteDatabase.close();
         return stationArrayList;
+    }
+
+    @Override
+    public int deleteAllStation() {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        int result = sqLiteDatabase.delete(StationEntry.TABLE_NAME, null, null);
+        sqLiteDatabase.close();
+        return result;
     }
 }

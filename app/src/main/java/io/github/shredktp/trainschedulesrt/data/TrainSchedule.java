@@ -5,26 +5,37 @@ package io.github.shredktp.trainschedulesrt.data;
  */
 
 public class TrainSchedule {
+    private String startStation;
+    private String endStation;
     private String number;
     private String type;
     private String startTime;
     private String endTime;
 
-    public static final String TRAIN_SCHEDULE_TABLE_NAME = "TrainSchedule";
-
-    public class Column {
-        public static final String ID = "_id";
-        public static final String NAME = "number";
-        public static final String TYPE = "type";
-        public static final String START_TIME = "startTime";
-        public static final String END_TIME = "endTime";
-    }
-
-    public TrainSchedule(String number, String type, String startTime, String endTime) {
+    public TrainSchedule(String startStation, String endStation, String number, String type, String startTime,
+                         String endTime) {
+        this.startStation = startStation;
+        this.endStation = endStation;
         this.number = number;
         this.type = type;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public String getStartStation() {
+        return startStation;
+    }
+
+    public void setStartStation(String startStation) {
+        this.startStation = startStation;
+    }
+
+    public String getEndStation() {
+        return endStation;
+    }
+
+    public void setEndStation(String endStation) {
+        this.endStation = endStation;
     }
 
     public String getNumber() {
@@ -62,7 +73,9 @@ public class TrainSchedule {
     @Override
     public String toString() {
         return "TrainSchedule{" +
-                "\nnumber='" + number + '\'' +
+                "\nstartStation='" + startStation + '\'' +
+                "\nendStation='" + endStation + '\'' +
+                ",\nnumber='" + number + '\'' +
                 ",\ntype='" + type + '\'' +
                 ",\nstartTime='" + startTime + '\'' +
                 ",\nendTime='" + endTime + '\'' +

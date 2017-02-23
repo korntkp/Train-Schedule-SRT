@@ -4,4 +4,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_hint">Station name</string>
+    <string name="navigation_main">Main</string>
+    <string name="navigation_history">History</string>
+    <string name="navigation_setting">Setting</string>
+
+    <string name="btn_main_see_schedule">See Schedule</string>
+    <string name="btn_main_start_station">Start Station</string>
+    <string name="btn_main_end_station">End Station</string>
 </resources>

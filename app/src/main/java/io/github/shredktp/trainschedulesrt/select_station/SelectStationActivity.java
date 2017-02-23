@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.Station;
-import io.github.shredktp.trainschedulesrt.data.source.local.StationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
 
 public class SelectStationActivity extends AppCompatActivity implements View.OnClickListener, OnSearchViewListener {
 
@@ -45,9 +45,9 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_station);
 
-        setupToolbar();
         getExtraFromIntent();
         setupView();
+        setupToolbar();
         setupStationFromDb();
         setupRecyclerView();
     }
@@ -66,9 +66,6 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
         baseMaterialSearchView = (BaseMaterialSearchView) findViewById(R.id.select_station_search_view);
         baseMaterialSearchView.setOnSearchViewListener(this);
         baseMaterialSearchView.setVisibility(View.VISIBLE);
-
-//        btnStation = (Button) findViewById(R.id.btn_station);
-//        btnStation.setOnClickListener(this);
     }
 
     private void setupStationFromDb() {

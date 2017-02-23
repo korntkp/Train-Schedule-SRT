@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.data.source.local;
+package io.github.shredktp.trainschedulesrt.data.source.station;
 
 import android.provider.BaseColumns;
 
@@ -6,11 +6,11 @@ import android.provider.BaseColumns;
  * Created by Korshreddern on 08-Feb-17.
  */
 
-public final class StationPersistanceContract {
+public final class StationPersistenceContract {
 
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
-    private StationPersistanceContract() {}
+    private StationPersistenceContract() {}
 
     /* Inner class that defines the table contents */
     public static abstract class StationEntry implements BaseColumns {

@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.data.source;
+package io.github.shredktp.trainschedulesrt.data.source.station;
 
 import java.util.ArrayList;
 
@@ -25,6 +25,6 @@ public interface StationDataSource {
 //    long updateStation(String name);
 //    long updateStation(ArrayList<Station> stationArrayList);
 
-//    long deleteAllStation();
+    int deleteAllStation();
 //    long deleteStation(String name);
 }
