@@ -19,6 +19,8 @@ import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationP
 
 public class PairStationLocalDataSource implements PairStationDataSource {
     private static final String TAG = "PairSttDSrc";
+    private static final int IS_IT_FIRST_TRUE = 1;
+    private static final int IS_IT_FIRST_FALSE = 0;
 
     private static PairStationLocalDataSource INSTANCE;
     private DbHelper dbHelper;
@@ -54,6 +56,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         long clearSeeItFirstResult = clearSeeItFirst(sqLiteDatabase);
+//        long clearSeeItFirstResult = deleteSeeItFirstPairStation();
         Log.d(TAG, "updateSeeItFirst clearSeeItFirstResult: " + clearSeeItFirstResult);
 
         ContentValues contentValues = new ContentValues();
@@ -71,10 +74,10 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
     private long clearSeeItFirst(SQLiteDatabase sqLiteDatabase) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, false);
+        contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, IS_IT_FIRST_FALSE);
 
         String whereCause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] whereArgs = { String.valueOf(1) };
+        String[] whereArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
 
         return sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereCause, whereArgs);
     }
@@ -92,7 +95,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         };
 
         String selection = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(1) };
+        String[] selectionArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
 
         Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, selection,
                 selectionArgs, null, null, null);
@@ -163,8 +166,20 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
     @Override
     public int deleteAll() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, null, null);
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
+    public int deleteSeeItFirstPairStation() {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        String whereClause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
+        String[] whereArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
+
+        int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, whereClause, whereArgs);
         sqLiteDatabase.close();
         return result;
     }

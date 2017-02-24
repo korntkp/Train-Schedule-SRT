@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
+import io.github.shredktp.trainschedulesrt.Utils.IdlingResourceImpl;
 import io.github.shredktp.trainschedulesrt.api_srt.ApiSrt;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
 import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
@@ -46,8 +49,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static io.github.shredktp.trainschedulesrt.R.id.btn_select_end_station;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_see_schedule;
+import static io.github.shredktp.trainschedulesrt.R.id.btn_select_end_station;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_select_start_station;
 import static io.github.shredktp.trainschedulesrt.R.id.fab_see_it_first;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.EXTRA_KEY_REQUEST_CODE;
@@ -75,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String startStation = "";
     private String endStation = "";
+
+    private IdlingResourceImpl idlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +256,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
 
         ApiSrt apiSrt = retrofit.create(ApiSrt.class);
-        Call<String> trainScheduleBodyCall = apiSrt.getSchedule(startStation, endStation);
+        final Call<String> trainScheduleBodyCall = apiSrt.getSchedule(startStation, endStation);
+
+        // TODO: 24-Feb-17 Espresso Idling Resource (xxx, this, idlingResource)
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
 
         trainScheduleBodyCall.enqueue(new Callback<String>() {
             @Override
@@ -270,6 +280,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onResponse not successful: " + response.body());
                     Log.d(TAG, "onResponse not successful: " + response.errorBody());
                 }
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
             }
 
             @Override
@@ -277,6 +290,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
                 setupNoScheduleResult();
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
             }
         });
     }
@@ -403,5 +419,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         outState.putString(START_STATION, startStation);
         outState.putString(END_STATION, endStation);
         super.onSaveInstanceState(outState);
+    }
+
+    /*
+    * UI Testing
+    * Espresso Idling
+    * */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new IdlingResourceImpl();
+        }
+        return idlingResource;
     }
 }

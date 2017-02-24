@@ -2,10 +2,13 @@ package io.github.shredktp.trainschedulesrt;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,12 +34,9 @@ public class ExampleInstrumentedTest {
 
     private static final String EXPECTED_START_STATION_BKK = "กรุงเทพ";
     private static final String EXPECTED_START_STATION_KRA_BIAT = "กระเบียด";
-    private Context appContext;
 
-    @Before
-    public void setup() {
-        appContext = InstrumentationRegistry.getTargetContext();
-    }
+    private Context appContext;
+    private IdlingResource idlingResource;
 
     @Rule
     public ActivityTestRule<MainActivity> mainActivityActivityTestRule = new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -46,9 +46,15 @@ public class ExampleInstrumentedTest {
             }
     };
 
+    @Before
+    public void setup() {
+        appContext = InstrumentationRegistry.getTargetContext();
+        idlingResource = mainActivityActivityTestRule.getActivity().getIdlingResource();
+        Espresso.registerIdlingResources(idlingResource);
+    }
+
     @Test
     public void useAppContext() throws Exception {
-        Context appContext = InstrumentationRegistry.getTargetContext();
         assertEquals("io.github.shredktp.trainschedulesrt", appContext.getPackageName());
     }
 
@@ -106,7 +112,14 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.btn_see_schedule)).perform(click());
 
-//        onView(withId(R.id.list_view_schedule)).check(matches(isDisplayed()));
-//        onView(withId(R.id.fab_see_it_first)).check(matches(isDisplayed()));
+        onView(withId(R.id.list_view_schedule)).check(matches(isDisplayed()));
+        onView(withId(R.id.fab_see_it_first)).check(matches(isDisplayed()));
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        if (idlingResource != null) {
+            Espresso.unregisterIdlingResources(idlingResource);
+        }
     }
 }

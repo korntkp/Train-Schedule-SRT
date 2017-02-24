@@ -18,4 +18,5 @@ public interface PairStationDataSource {
     ArrayList<PairStation> getAllPairStation();
 
     int deleteAll();
+    int deleteSeeItFirstPairStation();
 }

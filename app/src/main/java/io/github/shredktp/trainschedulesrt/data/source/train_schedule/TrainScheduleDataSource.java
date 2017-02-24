@@ -19,6 +19,5 @@ public interface TrainScheduleDataSource {
     ArrayList<TrainSchedule> getTrainScheduleByIsFirst();
     ArrayList<TrainSchedule> getAllTrainSchedule();
 
-    long deleteAll();
-    long deleteStar();
+    int deleteAll();
 }

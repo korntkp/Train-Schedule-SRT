@@ -165,12 +165,10 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
     }
 
     @Override
-    public long deleteAll() {
-        return 0;
-    }
-
-    @Override
-    public long deleteStar() {
-        return 0;
+    public int deleteAll() {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+        int result = sqLiteDatabase.delete(TrainScheduleEntry.TABLE_NAME, null, null);
+        sqLiteDatabase.close();
+        return result;
     }
 }
