@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.github.shredktp.trainschedulesrt.Utils.ConnectionUtil;
 import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -112,8 +113,13 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.btn_see_schedule)).perform(click());
 
-        onView(withId(R.id.list_view_schedule)).check(matches(isDisplayed()));
-        onView(withId(R.id.fab_see_it_first)).check(matches(isDisplayed()));
+        if (ConnectionUtil.isConnected(appContext)) {
+            onView(withId(R.id.list_view_schedule)).check(matches(isDisplayed()));
+            onView(withId(R.id.fab_see_it_first)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(R.id.layout_detail)).check(matches(isDisplayed()));
+            onView(withId(R.id.tv_detail)).check(matches(isDisplayed()));
+        }
     }
 
     @After
