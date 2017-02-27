@@ -84,12 +84,17 @@ public class StationLocalDataSource implements StationDataSource {
     public long addStation(ArrayList<Station> stationArrayList) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         long result = 0;
+        sqLiteDatabase.beginTransaction();
+
+        ContentValues contentValues = new ContentValues();
         for (int i = 0; i < stationArrayList.size(); i++) {
-            ContentValues contentValues = new ContentValues();
             contentValues.put(StationEntry.COLUMN_NAME_NAME, stationArrayList.get(i).getName());
             contentValues.put(StationEntry.COLUMN_NAME_LINE, stationArrayList.get(i).getLine());
             result += sqLiteDatabase.insert(StationEntry.TABLE_NAME, null, contentValues);
         }
+
+        sqLiteDatabase.setTransactionSuccessful();
+        sqLiteDatabase.endTransaction();
         sqLiteDatabase.close();
         return result;
     }

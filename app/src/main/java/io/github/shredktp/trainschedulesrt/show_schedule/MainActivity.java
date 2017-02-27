@@ -35,12 +35,9 @@ import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.Utils.IdlingResourceImpl;
 import io.github.shredktp.trainschedulesrt.api_srt.ApiSrt;
 import io.github.shredktp.trainschedulesrt.api_srt.ToStringConverterFactory;
-import io.github.shredktp.trainschedulesrt.asynctask.UpdateStationArrayListTask;
 import io.github.shredktp.trainschedulesrt.data.PairStation;
-import io.github.shredktp.trainschedulesrt.data.Station;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
-import io.github.shredktp.trainschedulesrt.data.source.station.StationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainScheduleLocalDataSource;
 import io.github.shredktp.trainschedulesrt.history_search.HistoryActivity;
 import io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity;
@@ -61,11 +58,10 @@ import static io.github.shredktp.trainschedulesrt.select_station.SelectStationAc
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
-    private static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
-    private static final String NO_SCHEDULE = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
+    public static final String BASE_URL_SRT_CHECK_TIME = "http://www.railway.co.th/checktime/";
+    public static final String NO_SCHEDULE = "ไม่มีขบวนรถที่จอดระหว่างสถานีต้นทาง และปลายทางที่ท่านเลือก";
     public static final String START_STATION = "startStation";
     public static final String END_STATION = "endStation";
-    private static final int COUNT_ALL_STATION = 670;
 
     private Button btnSeeSchedule;
     private Button btnSelectStartStation, btnSelectEndStation;
@@ -90,16 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupToolbar();
         setupNavigationDrawer();
         setupView();
-
-        int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                .countStation();
-        if (countStation <= COUNT_ALL_STATION) { //680
-            Log.d(TAG, "onCreate: Setup Station");
-            // TODO: 21-Feb-17 Clear All Station
-            stationApiRequester();
-        } else {
-            setupSeeItFirst();
-        }
+        setupSeeItFirst();
     }
 
     private void setupSeeItFirst() {
@@ -108,11 +95,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pairStation = PairStationLocalDataSource
                     .getInstance(Contextor.getInstance().getContext()).getSeeFirstPairStation();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.i(TAG, "setupSeeItFirst: No Star Station");
             return;
         }
 
-        ArrayList<TrainSchedule> trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
+        ArrayList<TrainSchedule> trainScheduleArrayList =
+                TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                .getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
         setupScheduleResult(trainScheduleArrayList);
     }
 
@@ -180,75 +169,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void stationApiRequester() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_SRT_CHECK_TIME)
-                .addConverterFactory(new ToStringConverterFactory())
-                .build();
-
-        ApiSrt apiSrt = retrofit.create(ApiSrt.class);
-        Call<String> stationCaller = apiSrt.getStation();
-
-        stationCaller.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "stationCaller onResponse: isSuccessful");
-                    String result = response.body();
-                    stationParser(result);
-                } else {
-                    Log.d(TAG, "stationApiRequester onResponse not successful: " + response.body());
-                    Log.d(TAG, "onResponse not successful: " + response.errorBody());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
-                Log.d(TAG, "onFailure: " + call.request().toString());
-                Toast.makeText(MainActivity.this, NO_SCHEDULE, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void stationParser(String html) {
-        Log.d(TAG, "stationParser: starting parse");
-        ArrayList<Station> stationArrayList = stationExtractor(html);
-        addStationByArrayList(stationArrayList);
-//        addStationByArray(stations);
-    }
-
-    @NonNull
-    private ArrayList<Station> stationExtractor(String html) {
-        Document document = Jsoup.parse(html);
-        Element body = document.body();
-        Element divMainContent = body.child(0);
-        Element table = divMainContent.select("table").get(2);
-        Element tr = table.child(0);
-        Element tbodytr = tr.child(1);
-        Element elementStation = tbodytr.getElementById("StationFirst");
-        Elements optionElements = elementStation.getElementsByTag("option");
-
-        ArrayList<Station> stationArrayList = new ArrayList<>();
-        for (Element option : optionElements) {
-            String optionValue = option.attr("value");
-            if (!optionValue.equals("")) {
-                stationArrayList.add(new Station(optionValue));
-            }
-        }
-        return stationArrayList;
-    }
-
-//    private void addStationByArray(Station[] stations) {
-//        new UpdateStationTask(getApplicationContext()).execute(stations);
-//    }
-
-    private void addStationByArrayList(ArrayList<Station> stationArrayList) {
-        Log.d(TAG, "addStationByArrayList Size: " + stationArrayList.size());
-        // TODO: 21-Feb-17 Take a long time !!!
-        new UpdateStationArrayListTask().execute(stationArrayList);
-    }
-
     private void trainScheduleApiRequester(final String startStation, final String endStation) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_SRT_CHECK_TIME)
@@ -271,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (responseBody.contains(NO_SCHEDULE)) {
                         setupNoScheduleResult();
                     } else {
+                        // TODO: 27-Feb-17 Case 1) HTML Parser Error -> Display Button Goto SRT Web
                         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, responseBody);
                         saveHistoryAndSchedule(trainScheduleArrayList);
                         setupScheduleResult(trainScheduleArrayList);
@@ -289,6 +210,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d(TAG, "trainScheduleApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
+
+                // TODO: 27-Feb-17 Case 1) API Error -> Display Button Goto SRT Web
+                // TODO: 27-Feb-17 Case 2) No internet connection -> Display Button Try Again
+
                 setupNoScheduleResult();
                 if (idlingResource != null) {
                     idlingResource.setIdleState(true);

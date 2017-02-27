@@ -12,17 +12,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".show_schedule.MainActivity">
+        <activity android:name=".initial_splash.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".show_schedule.MainActivity" />
         <activity android:name=".select_station.SelectStationActivity" />
         <activity android:name=".history_search.HistoryActivity" />
-        <activity android:name=".offline_schedule.OfflineScheduleActivity"
-            android:parentActivityName=".history_search.HistoryActivity"/>
+        <activity
+            android:name=".offline_schedule.OfflineScheduleActivity"
+            android:parentActivityName=".history_search.HistoryActivity" />
     </application>
 
 </manifest>

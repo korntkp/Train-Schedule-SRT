@@ -5,4 +5,6 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
+
+    <style name="ProgressBarStyleHorizontal" parent="@android:style/Widget.Material.ProgressBar.Horizontal" />
 </resources>
