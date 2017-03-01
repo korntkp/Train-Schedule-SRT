@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
@@ -28,6 +32,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.view.View.VISIBLE;
 import static io.github.shredktp.trainschedulesrt.show_schedule.MainActivity.BASE_URL_SRT_CHECK_TIME;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -36,23 +41,34 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int COUNT_ALL_STATION = 670;
     private static final String NO_STATION = "Cannot retrieve information, please connect internet and try again";
 
+    private TextView tvNoInternet;
+    private Button btnTryAgain;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+
+        tvNoInternet = (TextView) findViewById(R.id.tv_no_internet);
+        btnTryAgain = (Button) findViewById(R.id.btn_try_again);
+        progressBar = (ProgressBar) findViewById(R.id.progress_splash_load_station);
+        btnTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvNoInternet.setVisibility(View.GONE);
+                btnTryAgain.setVisibility(View.GONE);
+                progressBar.setVisibility(VISIBLE);
+                stationApiRequester();
+            }
+        });
 
         int countStation = StationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                 .countStation();
 
         if (countStation <= COUNT_ALL_STATION) { //680
             Log.d(TAG, "onCreate: Setup Station");
-
-            if (ConnectionUtil.isConnected(Contextor.getInstance().getContext())) {
-                stationApiRequester();
-            } else {
-                // TODO: 27-Feb-17 Display TextView problem
-                // TODO: 27-Feb-17 Display Button Try Again
-            }
+            stationApiRequester();
         } else {
             Log.d(TAG, "onCreate: " + countStation + " Stations");
             gotoMainAct();
@@ -65,7 +81,26 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
+    private boolean isInternetConnected() {
+        if (ConnectionUtil.isConnected(Contextor.getInstance().getContext())) {
+            return true;
+        } else {
+            setupNoInternetView();
+            return false;
+        }
+    }
+
+    private void setupNoInternetView() {
+        tvNoInternet.setVisibility(View.VISIBLE);
+        btnTryAgain.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void stationApiRequester() {
+        if (!isInternetConnected()) {
+            return;
+        }
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_SRT_CHECK_TIME)
                 .addConverterFactory(new ToStringConverterFactory())
@@ -95,6 +130,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 Log.d(TAG, "stationApiRequester onFailure: " + t.getMessage());
                 Log.d(TAG, "onFailure: " + call.request().toString());
                 Toast.makeText(SplashScreenActivity.this, NO_STATION, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
 
                 // TODO: 27-Feb-17 Case 1) Wifi login after connected -> Display Button Try Again
                 // TODO: 27-Feb-17 Case 2) API Error -> Display Button Goto SRT Web
