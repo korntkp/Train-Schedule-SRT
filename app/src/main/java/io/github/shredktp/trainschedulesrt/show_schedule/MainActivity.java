@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ListView listViewSchedule;
     private LinearLayout linearLayoutDetail;
-    private TextView tvDetail;
+    private TextView tvDetailOne;
+    private LinearLayout linearLayoutTitlePair;
+    private TextView tvTitleStartStation, tvTitleEndStation;
     private DrawerLayout drawerLayout;
 
     private String startStation = "";
@@ -129,7 +131,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSeeSchedule = (Button) findViewById(btn_see_schedule);
         btnSelectStartStation = (Button) findViewById(btn_select_start_station);
         btnSelectEndStation = (Button) findViewById(btn_select_end_station);
-        tvDetail = (TextView) findViewById(R.id.tv_detail);
+        tvDetailOne = (TextView) findViewById(R.id.tv_detail);
+        linearLayoutTitlePair = (LinearLayout) findViewById(R.id.layout_title_pair);
+        tvTitleStartStation = (TextView) findViewById(R.id.tv_title_start_station);
+        tvTitleEndStation = (TextView) findViewById(R.id.tv_title_end_station);
         fabSeeItFirst = (FloatingActionButton) findViewById(fab_see_it_first);
 
         listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
@@ -229,8 +234,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupScheduleResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
+        linearLayoutTitlePair.setVisibility(View.VISIBLE);
+        tvTitleStartStation.setText(trainScheduleArrayList.get(0).getStartStation());
+        tvTitleEndStation.setText(trainScheduleArrayList.get(0).getEndStation());
+
         linearLayoutDetail.setVisibility(View.GONE);
         listViewSchedule.setVisibility(View.VISIBLE);
+
         ScheduleAdapter scheduleAdapter =
                 new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
         scheduleAdapter.notifyDataSetChanged();
@@ -238,9 +248,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupNoScheduleResult() {
+        linearLayoutTitlePair.setVisibility(View.GONE);
+        tvTitleStartStation.setText("");
+        tvTitleEndStation.setText("");
+
         listViewSchedule.setVisibility(View.GONE);
         linearLayoutDetail.setVisibility(View.VISIBLE);
-        tvDetail.setText(NO_SCHEDULE);
+        tvDetailOne.setText(NO_SCHEDULE);
         Toast.makeText(MainActivity.this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
     }
 
@@ -274,14 +288,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case btn_select_start_station: {
-                fabSeeItFirst.setVisibility(View.GONE);
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_START_STATION);
                 startActivityForResult(intent, REQUEST_CODE_START_STATION);
                 break;
             }
             case btn_select_end_station: {
-                fabSeeItFirst.setVisibility(View.GONE);
                 Intent intent = new Intent(MainActivity.this, SelectStationActivity.class);
                 intent.putExtra(EXTRA_KEY_REQUEST_CODE, REQUEST_CODE_END_STATION);
                 startActivityForResult(intent, REQUEST_CODE_END_STATION);
@@ -308,11 +320,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (resultCode == Activity.RESULT_OK) {
                 startStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnSelectStartStation.setText(startStation);
+                fabSeeItFirst.setVisibility(View.GONE);
             }
         } else if (requestCode == REQUEST_CODE_END_STATION) {
             if (resultCode == Activity.RESULT_OK) {
                 endStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnSelectEndStation.setText(endStation);
+                fabSeeItFirst.setVisibility(View.GONE);
             }
         }
     }

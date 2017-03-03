@@ -44,6 +44,33 @@
             android:text="@string/btn_main_see_schedule" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_title_pair"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_title_start_station"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="Start" />
+
+        <TextView
+            android:id="@+id/tv_title_end_station"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="End" />
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/list_view_schedule"
         android:layout_width="match_parent"
@@ -57,13 +84,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@android:color/holo_blue_light">
+        android:background="@android:color/holo_blue_light"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_detail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal|center_vertical"
-            android:text="Let's Go" />
+            android:layout_height="wrap_content"
+            android:text="Select station and see schedule\nPress star button to see that schedule first"
+            android:textAlignment="center" />
+
     </LinearLayout>
+
 </LinearLayout>
