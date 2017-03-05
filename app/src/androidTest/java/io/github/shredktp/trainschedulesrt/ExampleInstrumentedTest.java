@@ -114,7 +114,7 @@ public class ExampleInstrumentedTest {
         onView(withId(R.id.btn_see_schedule)).perform(click());
 
         if (ConnectionUtil.isConnected(appContext)) {
-            onView(withId(R.id.list_view_schedule)).check(matches(isDisplayed()));
+            onView(withId(R.id.recycler_view_schedule)).check(matches(isDisplayed()));
             onView(withId(R.id.fab_see_it_first)).check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.layout_detail)).check(matches(isDisplayed()));

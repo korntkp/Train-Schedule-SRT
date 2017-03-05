@@ -12,7 +12,7 @@ import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainScheduleLocalDataSource;
-import io.github.shredktp.trainschedulesrt.show_schedule.ScheduleAdapter;
+import io.github.shredktp.trainschedulesrt.show_schedule.ScheduleListViewAdapter;
 
 public class OfflineScheduleActivity extends AppCompatActivity {
 
@@ -58,10 +58,10 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     }
 
     private void setupListView() {
-        ScheduleAdapter scheduleAdapter =
-                new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
-//        scheduleAdapter.notifyDataSetChanged();
-        offlineListViewSchedule.setAdapter(scheduleAdapter);
+        ScheduleListViewAdapter scheduleListViewAdapter =
+                new ScheduleListViewAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
+//        scheduleListViewAdapter.notifyDataSetChanged();
+        offlineListViewSchedule.setAdapter(scheduleListViewAdapter);
     }
 
 //    private void setupNavigationDrawer() {

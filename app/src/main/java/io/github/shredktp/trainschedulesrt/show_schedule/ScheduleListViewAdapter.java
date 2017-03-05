@@ -12,15 +12,11 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
 
-/**
- * Created by Korshreddern on 04-Feb-17.
- */
-
-public class ScheduleAdapter extends BaseAdapter {
+public class ScheduleListViewAdapter extends BaseAdapter {
     Context context;
     ArrayList<TrainSchedule> trainScheduleArrayList;
 
-    public ScheduleAdapter(Context context, ArrayList<TrainSchedule> trainScheduleArrayList) {
+    public ScheduleListViewAdapter(Context context, ArrayList<TrainSchedule> trainScheduleArrayList) {
         this.context = context;
         this.trainScheduleArrayList = trainScheduleArrayList;
     }

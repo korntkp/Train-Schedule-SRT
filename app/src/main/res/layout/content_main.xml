@@ -71,13 +71,12 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/list_view_schedule"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_schedule"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
-
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:id="@+id/layout_detail"

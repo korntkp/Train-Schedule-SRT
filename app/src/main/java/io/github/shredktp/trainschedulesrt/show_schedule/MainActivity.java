@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.test.espresso.IdlingResource;
@@ -13,13 +12,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +51,6 @@ import retrofit2.Retrofit;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_see_schedule;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_select_end_station;
 import static io.github.shredktp.trainschedulesrt.R.id.btn_select_start_station;
-import static io.github.shredktp.trainschedulesrt.R.id.fab_see_it_first;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.EXTRA_KEY_REQUEST_CODE;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.INTENT_EXTRA_KEY_STATION;
 import static io.github.shredktp.trainschedulesrt.select_station.SelectStationActivity.REQUEST_CODE_END_STATION;
@@ -65,11 +66,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button btnSeeSchedule;
     private Button btnSelectStartStation, btnSelectEndStation;
-    private FloatingActionButton fabSeeItFirst;
 
-    private ListView listViewSchedule;
+    private RecyclerView recyclerViewSchedule;
+    private RecyclerView.Adapter adapterRecyclerView;
+    private RecyclerView.LayoutManager layoutManagerRecyclerView;
+    private DividerItemDecoration mDividerItemDecoration;
+
     private LinearLayout linearLayoutDetail;
-    private TextView tvDetailOne;
+    private TextView tvDetail;
     private LinearLayout linearLayoutTitlePair;
     private TextView tvTitleStartStation, tvTitleEndStation;
     private DrawerLayout drawerLayout;
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String endStation = "";
 
     private IdlingResourceImpl idlingResource;
+
+    MenuItem menuItemBookmark, menuItemBookmarked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ArrayList<TrainSchedule> trainScheduleArrayList =
                 TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                .getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
+                        .getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
         setupScheduleResult(trainScheduleArrayList);
     }
 
@@ -131,19 +137,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSeeSchedule = (Button) findViewById(btn_see_schedule);
         btnSelectStartStation = (Button) findViewById(btn_select_start_station);
         btnSelectEndStation = (Button) findViewById(btn_select_end_station);
-        tvDetailOne = (TextView) findViewById(R.id.tv_detail);
+        tvDetail = (TextView) findViewById(R.id.tv_detail);
         linearLayoutTitlePair = (LinearLayout) findViewById(R.id.layout_title_pair);
         tvTitleStartStation = (TextView) findViewById(R.id.tv_title_start_station);
         tvTitleEndStation = (TextView) findViewById(R.id.tv_title_end_station);
-        fabSeeItFirst = (FloatingActionButton) findViewById(fab_see_it_first);
 
-        listViewSchedule = (ListView) findViewById(R.id.list_view_schedule);
+        recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
+
+        recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
         linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
 
         btnSeeSchedule.setOnClickListener(this);
         btnSelectStartStation.setOnClickListener(this);
         btnSelectEndStation.setOnClickListener(this);
-        fabSeeItFirst.setOnClickListener(this);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -198,9 +204,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         // TODO: 27-Feb-17 Case 1) HTML Parser Error -> Display Button Goto SRT Web
                         ArrayList<TrainSchedule> trainScheduleArrayList = scheduleExtractor(startStation, endStation, responseBody);
-                        saveHistoryAndSchedule(trainScheduleArrayList);
+
+                        PairStation pairStation = new PairStation(startStation, endStation, 1, 0, System.currentTimeMillis());
+                        TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+
                         setupScheduleResult(trainScheduleArrayList);
-                        fabSeeItFirst.setVisibility(View.VISIBLE);
+                        setupBookmarkMenu(pairStation);
                     }
                 } else {
                     Log.d(TAG, "onResponse not successful: " + response.body());
@@ -227,10 +236,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void saveHistoryAndSchedule(ArrayList<TrainSchedule> trainScheduleArrayList) {
-        PairStation pairStation = new PairStation(startStation, endStation, 1, 0, System.currentTimeMillis());
-        PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
-        TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(trainScheduleArrayList);
+    private void setupBookmarkMenu(PairStation pairStation) {
+        boolean isBookmarked = PairStationLocalDataSource
+                .getInstance(Contextor.getInstance().getContext())
+                .isSeeItFirstByStation(pairStation.getStartStation(), pairStation.getEndStation());
+        if (isBookmarked) {
+            menuItemBookmark.setVisible(false);
+            menuItemBookmarked.setVisible(true);
+        } else {
+            PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).add(pairStation);
+            menuItemBookmarked.setVisible(false);
+            menuItemBookmark.setVisible(true);
+        }
     }
 
     private void setupScheduleResult(ArrayList<TrainSchedule> trainScheduleArrayList) {
@@ -239,12 +256,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTitleEndStation.setText(trainScheduleArrayList.get(0).getEndStation());
 
         linearLayoutDetail.setVisibility(View.GONE);
-        listViewSchedule.setVisibility(View.VISIBLE);
+        recyclerViewSchedule.setVisibility(View.VISIBLE);
 
-        ScheduleAdapter scheduleAdapter =
-                new ScheduleAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
-        scheduleAdapter.notifyDataSetChanged();
-        listViewSchedule.setAdapter(scheduleAdapter);
+//        ScheduleListViewAdapter scheduleListViewAdapter =
+//                new ScheduleListViewAdapter(Contextor.getInstance().getContext(), trainScheduleArrayList);
+//        scheduleListViewAdapter.notifyDataSetChanged();
+//        recyclerViewSchedule.setAdapter(scheduleListViewAdapter);
+
+        layoutManagerRecyclerView = new LinearLayoutManager(this);
+        recyclerViewSchedule.setLayoutManager(layoutManagerRecyclerView);
+        mDividerItemDecoration = new DividerItemDecoration(recyclerViewSchedule.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerViewSchedule.addItemDecoration(mDividerItemDecoration);
+
+        // specify an adapter (see also next example)
+        adapterRecyclerView = new ScheduleRecyclerViewAdapter(trainScheduleArrayList);
+        recyclerViewSchedule.setAdapter(adapterRecyclerView);
     }
 
     private void setupNoScheduleResult() {
@@ -252,9 +278,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTitleStartStation.setText("");
         tvTitleEndStation.setText("");
 
-        listViewSchedule.setVisibility(View.GONE);
+        recyclerViewSchedule.setVisibility(View.GONE);
         linearLayoutDetail.setVisibility(View.VISIBLE);
-        tvDetailOne.setText(NO_SCHEDULE);
+        tvDetail.setText(NO_SCHEDULE);
         Toast.makeText(MainActivity.this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
     }
 
@@ -303,14 +329,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 trainScheduleApiRequester(startStation, endStation);
                 break;
             }
-            case fab_see_it_first: {
-                PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
-                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                        .updateSeeItFirst(pairStation);
-                Snackbar.make(view, "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
-                fabSeeItFirst.setVisibility(View.GONE);
-                break;
-            }
         }
     }
 
@@ -320,26 +338,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (resultCode == Activity.RESULT_OK) {
                 startStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnSelectStartStation.setText(startStation);
-                fabSeeItFirst.setVisibility(View.GONE);
+                menuItemBookmark.setVisible(false);
+                menuItemBookmarked.setVisible(false);
             }
         } else if (requestCode == REQUEST_CODE_END_STATION) {
             if (resultCode == Activity.RESULT_OK) {
                 endStation = data.getStringExtra(INTENT_EXTRA_KEY_STATION);
                 btnSelectEndStation.setText(endStation);
-                fabSeeItFirst.setVisibility(View.GONE);
+                menuItemBookmark.setVisible(false);
+                menuItemBookmarked.setVisible(false);
             }
         }
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.see_schedule_toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 // Open the navigation drawer when the home icon is selected from the toolbar.
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
+            }
+            case R.id.action_bookmark: {
+                PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
+                long result = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .updateSeeItFirst(pairStation);
+                Snackbar.make(getWindow().getDecorView(), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                Log.i(TAG, "onOptionsItemSelected click bookmark: " + result);
+                item.setVisible(false);
+                menuItemBookmarked.setVisible(true);
+                return true;
+            }
+            case R.id.action_bookmarked: {
+                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .deleteSeeItFirstPairStation();
+                Snackbar.make(getWindow().getDecorView(), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
+                item.setVisible(false);
+                menuItemBookmark.setVisible(true);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menuItemBookmark = menu.findItem(R.id.action_bookmark);
+        menuItemBookmarked = menu.findItem(R.id.action_bookmarked);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

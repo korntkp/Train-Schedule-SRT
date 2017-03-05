@@ -114,7 +114,7 @@ public class SelectStationActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.search_station_toolbar_menu, menu);
         MenuItem item = menu.findItem(R.id.action_search);
         baseMaterialSearchView.setMenuItem(item);
         return true;

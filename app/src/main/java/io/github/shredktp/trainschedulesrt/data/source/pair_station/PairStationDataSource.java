@@ -16,6 +16,7 @@ public interface PairStationDataSource {
 
     PairStation getSeeFirstPairStation() throws Exception;
     ArrayList<PairStation> getAllPairStation();
+    boolean isSeeItFirstByStation(String startStation, String endStation);
 
     int deleteAll();
     int deleteSeeItFirstPairStation();

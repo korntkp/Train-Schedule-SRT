@@ -73,11 +73,12 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     private long clearSeeItFirst(SQLiteDatabase sqLiteDatabase) {
+        Log.i(TAG, "clearSeeItFirst: ");
         ContentValues contentValues = new ContentValues();
         contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, IS_IT_FIRST_FALSE);
 
         String whereCause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] whereArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
+        String[] whereArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
 
         return sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereCause, whereArgs);
     }
@@ -95,7 +96,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         };
 
         String selection = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
+        String[] selectionArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
 
         Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, selection,
                 selectionArgs, null, null, null);
@@ -165,6 +166,51 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
+    public boolean isSeeItFirstByStation(String startStation, String endStation) {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+        boolean result = false;
+
+        String[] projection = {
+                PairStationEntry.COLUMN_NAME_START_STATION,
+                PairStationEntry.COLUMN_NAME_END_STATION,
+                PairStationEntry.COLUMN_NAME_IS_FIRST,
+        };
+
+//        String selection = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
+        String selection = PairStationEntry.COLUMN_NAME_START_STATION + " LIKE ? AND " +
+                PairStationEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+//        String[] selectionArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
+        String[] selectionArgs = {startStation, endStation};
+
+        Cursor cursor = sqLiteDatabase.query(PairStationEntry.TABLE_NAME, projection, selection,
+                selectionArgs, null, null, null);
+        cursor.moveToFirst();
+
+        int countCursor = cursor.getCount();
+
+        if (countCursor <= 0) {
+            Log.d(TAG, "isSeeItFirstByStation Row count: " + countCursor);
+            result = false;
+        } else {
+//            String queryStartStation = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION));
+//            String queryEndStation = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION));
+//            Log.d(TAG, "isSeeItFirstByStation: " + queryStartStation);
+//            Log.d(TAG, "isSeeItFirstByStation: " + queryEndStation);
+            String isFirst = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST));
+            Log.i(TAG, "isSeeItFirstByStation count cursor: " + countCursor);
+            Log.i(TAG, "isSeeItFirstByStation isFirst: " + isFirst);
+            if (isFirst.equals("1")) {
+                result = true;
+            }
+        }
+
+        Log.i(TAG, "isSeeItFirstByStation result: " + result);
+        cursor.close();
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
     public int deleteAll() {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, null, null);
@@ -175,9 +221,10 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     @Override
     public int deleteSeeItFirstPairStation() {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+        Log.i(TAG, "deleteSeeItFirstPairStation: ");
 
         String whereClause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] whereArgs = { String.valueOf(IS_IT_FIRST_TRUE) };
+        String[] whereArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
 
         int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, whereClause, whereArgs);
         sqLiteDatabase.close();

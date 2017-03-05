@@ -11,4 +11,6 @@
     <string name="btn_main_see_schedule">See Schedule</string>
     <string name="btn_main_start_station">Start Station</string>
     <string name="btn_main_end_station">End Station</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="bookmarked">Bookmarked</string>
 </resources>
