@@ -73,7 +73,6 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     private long clearSeeItFirst(SQLiteDatabase sqLiteDatabase) {
-        Log.i(TAG, "clearSeeItFirst: ");
         ContentValues contentValues = new ContentValues();
         contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, IS_IT_FIRST_FALSE);
 
@@ -189,22 +188,14 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         int countCursor = cursor.getCount();
 
         if (countCursor <= 0) {
-            Log.d(TAG, "isSeeItFirstByStation Row count: " + countCursor);
             result = false;
         } else {
-//            String queryStartStation = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_START_STATION));
-//            String queryEndStation = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_END_STATION));
-//            Log.d(TAG, "isSeeItFirstByStation: " + queryStartStation);
-//            Log.d(TAG, "isSeeItFirstByStation: " + queryEndStation);
             String isFirst = cursor.getString(cursor.getColumnIndex(PairStationEntry.COLUMN_NAME_IS_FIRST));
-            Log.i(TAG, "isSeeItFirstByStation count cursor: " + countCursor);
-            Log.i(TAG, "isSeeItFirstByStation isFirst: " + isFirst);
             if (isFirst.equals("1")) {
                 result = true;
             }
         }
 
-        Log.i(TAG, "isSeeItFirstByStation result: " + result);
         cursor.close();
         sqLiteDatabase.close();
         return result;

@@ -42,18 +42,6 @@ public class HistoryActivity extends AppCompatActivity {
         setupResult(pairStationArrayList);
     }
 
-    private void setupListViewListener() {
-        listViewPairStation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
-                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
-                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
-                startActivity(intent);
-            }
-        });
-    }
-
     private void setupToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.history_toolbar);
         toolbar.setTitle("History Search");
@@ -71,6 +59,22 @@ public class HistoryActivity extends AppCompatActivity {
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
+    }
+
+    private void setupView() {
+        listViewPairStation = (ListView) findViewById(R.id.list_view_history);
+    }
+
+    private void setupListViewListener() {
+        listViewPairStation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
+                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
+                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -99,10 +103,6 @@ public class HistoryActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-    }
-
-    private void setupView() {
-        listViewPairStation = (ListView) findViewById(R.id.list_view_history);
     }
 
     private void setupResult(ArrayList<PairStation> pairStationArrayList) {

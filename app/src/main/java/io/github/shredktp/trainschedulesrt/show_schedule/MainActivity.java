@@ -143,8 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTitleEndStation = (TextView) findViewById(R.id.tv_title_end_station);
 
         recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
-
-        recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
         linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
 
         btnSeeSchedule.setOnClickListener(this);
@@ -370,7 +368,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 long result = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                         .updateSeeItFirst(pairStation);
                 Snackbar.make(getWindow().getDecorView(), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
-                Log.i(TAG, "onOptionsItemSelected click bookmark: " + result);
                 item.setVisible(false);
                 menuItemBookmarked.setVisible(true);
                 return true;
