@@ -2,16 +2,17 @@ package io.github.shredktp.trainschedulesrt.history_search;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -19,13 +20,17 @@ import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.PairStation;
 import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
-import io.github.shredktp.trainschedulesrt.offline_schedule.OfflineScheduleActivity;
 import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 
 public class HistoryActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private ListView listViewPairStation;
+
+    private RecyclerView recyclerViewPairStation;
+    private RecyclerView.Adapter adapterRecyclerView;
+    private RecyclerView.LayoutManager layoutManagerRecyclerView;
+    private DividerItemDecoration mDividerItemDecoration
+            ;
     private ArrayList<PairStation> pairStationArrayList;
 
     @Override
@@ -36,10 +41,10 @@ public class HistoryActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
         setupView();
-        setupListViewListener();
+//        setupListViewListener();
 
         pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
-        setupResult(pairStationArrayList);
+        setupRecyclerView(pairStationArrayList);
     }
 
     private void setupToolbar() {
@@ -47,8 +52,10 @@ public class HistoryActivity extends AppCompatActivity {
         toolbar.setTitle("History Search");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setupNavigationDrawer() {
@@ -62,26 +69,26 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void setupView() {
-        listViewPairStation = (ListView) findViewById(R.id.list_view_history);
+        recyclerViewPairStation = (RecyclerView) findViewById(R.id.recycler_view_history);
     }
 
-    private void setupListViewListener() {
-        listViewPairStation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
-                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
-                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
-                startActivity(intent);
-            }
-        });
-    }
+//    private void setupListViewListener() {
+//        recyclerViewPairStation.setOnClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
+//                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
+//                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
+//                startActivity(intent);
+//            }
+//        });
+//    }
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.main_navigation_menu_item:
                                 Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
@@ -105,9 +112,15 @@ public class HistoryActivity extends AppCompatActivity {
                 });
     }
 
-    private void setupResult(ArrayList<PairStation> pairStationArrayList) {
-        PairStationAdapter pairStationAdapter = new PairStationAdapter(Contextor.getInstance().getContext(), pairStationArrayList);
-        listViewPairStation.setAdapter(pairStationAdapter);
+    private void setupRecyclerView(ArrayList<PairStation> pairStationArrayList) {
+        layoutManagerRecyclerView = new LinearLayoutManager(this);
+        recyclerViewPairStation.setLayoutManager(layoutManagerRecyclerView);
+        mDividerItemDecoration = new DividerItemDecoration(recyclerViewPairStation.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerViewPairStation.addItemDecoration(mDividerItemDecoration);
+
+        adapterRecyclerView = new HistoryRecyclerAdapter(pairStationArrayList, HistoryActivity.this);
+        recyclerViewPairStation.setAdapter(adapterRecyclerView);
+
     }
 
     @Override

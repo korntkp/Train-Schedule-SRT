@@ -54,7 +54,7 @@ public class SelectStationAdapter extends RecyclerView.Adapter<SelectStationAdap
     }
 
     @Override
-    public void onBindViewHolder(SelectStationAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(SelectStationAdapter.ViewHolder holder, int position) {
         final String name = stationArrayList.get(position).getName();
         String line = stationArrayList.get(position).getLine();
 
