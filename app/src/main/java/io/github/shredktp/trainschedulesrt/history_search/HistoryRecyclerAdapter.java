@@ -3,15 +3,18 @@ package io.github.shredktp.trainschedulesrt.history_search;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.PairStation;
+import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.offline_schedule.OfflineScheduleActivity;
 
 /**
@@ -31,11 +34,13 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvStartStion;
         TextView tvEndStion;
+        ImageView imageViewDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvStartStion = (TextView) itemView.findViewById(R.id.tv_start_station);
             tvEndStion = (TextView) itemView.findViewById(R.id.tv_end_station);
+            imageViewDelete = (ImageView) itemView.findViewById(R.id.image_view_delete);
         }
     }
 
@@ -59,6 +64,17 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
                 intent.putExtra("startStation", startStation);
                 intent.putExtra("endStation", endStation);
                 context.startActivity(intent);
+            }
+        });
+
+        holder.imageViewDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 12-Mar-17 Show Dialog
+                pairStationArrayList.remove(position);
+                int result = PairStationLocalDataSource.getInstance(context).deleteByStation(startStation, endStation);
+                Log.d("Delete", "Delete: " + result);
+                notifyDataSetChanged();
             }
         });
     }

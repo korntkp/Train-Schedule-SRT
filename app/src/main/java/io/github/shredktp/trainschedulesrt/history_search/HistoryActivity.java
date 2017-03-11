@@ -29,8 +29,7 @@ public class HistoryActivity extends AppCompatActivity {
     private RecyclerView recyclerViewPairStation;
     private RecyclerView.Adapter adapterRecyclerView;
     private RecyclerView.LayoutManager layoutManagerRecyclerView;
-    private DividerItemDecoration mDividerItemDecoration
-            ;
+    private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<PairStation> pairStationArrayList;
 
     @Override
@@ -41,7 +40,6 @@ public class HistoryActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
         setupView();
-//        setupListViewListener();
 
         pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
         setupRecyclerView(pairStationArrayList);
@@ -71,18 +69,6 @@ public class HistoryActivity extends AppCompatActivity {
     private void setupView() {
         recyclerViewPairStation = (RecyclerView) findViewById(R.id.recycler_view_history);
     }
-
-//    private void setupListViewListener() {
-//        recyclerViewPairStation.setOnClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(HistoryActivity.this, OfflineScheduleActivity.class);
-//                intent.putExtra("startStation", pairStationArrayList.get(position).getStartStation());
-//                intent.putExtra("endStation", pairStationArrayList.get(position).getEndStation());
-//                startActivity(intent);
-//            }
-//        });
-//    }
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(

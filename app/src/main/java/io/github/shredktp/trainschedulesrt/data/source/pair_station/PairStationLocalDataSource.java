@@ -210,6 +210,20 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
+    public int deleteByStation(String startStation, String endStation) {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        String whereClause = PairStationEntry.COLUMN_NAME_START_STATION + " LIKE ? AND "
+                + PairStationEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+        String[] whereArgs = {startStation, endStation};
+
+        int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, whereClause, whereArgs);
+
+        sqLiteDatabase.close();
+        return result;
+    }
+
+    @Override
     public int deleteSeeItFirstPairStation() {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         Log.i(TAG, "deleteSeeItFirstPairStation: ");

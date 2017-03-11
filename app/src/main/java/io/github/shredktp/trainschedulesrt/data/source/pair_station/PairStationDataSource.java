@@ -19,5 +19,6 @@ public interface PairStationDataSource {
     boolean isSeeItFirstByStation(String startStation, String endStation);
 
     int deleteAll();
+    int deleteByStation(String startStation, String endStation);
     int deleteSeeItFirstPairStation();
 }

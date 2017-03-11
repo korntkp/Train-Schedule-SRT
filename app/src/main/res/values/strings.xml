@@ -13,4 +13,5 @@
     <string name="btn_main_end_station">End Station</string>
     <string name="bookmark">Bookmark</string>
     <string name="bookmarked">Bookmarked</string>
+    <string name="image_view_delete">delete</string>
 </resources>
