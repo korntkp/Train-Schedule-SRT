@@ -63,6 +63,7 @@ public class HistoryActivity extends AppCompatActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.history_nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
+            navigationView.getMenu().getItem(1).setChecked(true);
         }
     }
 
@@ -91,7 +92,6 @@ public class HistoryActivity extends AppCompatActivity {
                                 break;
                         }
                         // Close the navigation drawer when an item is selected.
-                        menuItem.setChecked(true);
                         drawerLayout.closeDrawers();
                         return true;
                     }

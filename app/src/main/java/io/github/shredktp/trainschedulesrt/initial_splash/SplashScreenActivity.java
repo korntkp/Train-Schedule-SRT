@@ -141,9 +141,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void stationParser(String html) {
         Log.d(TAG, "stationParser: starting parse");
-        ArrayList<Station> stationArrayList = stationExtractor(html);
-        addStationByArrayList(stationArrayList);
-//        addStationByArray(stations);
+        try {
+            ArrayList<Station> stationArrayList = stationExtractor(html);
+            addStationByArrayList(stationArrayList);
+//            addStationByArray(stations);
+        } catch (Exception e) {
+//          // TODO: 14-Mar-17 Show parse error message & Link to srt
+        }
     }
 
     @NonNull

@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
+            navigationView.getMenu().getItem(0).setChecked(true);
         }
     }
 
@@ -171,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 break;
                         }
                         // Close the navigation drawer when an item is selected.
-                        menuItem.setChecked(true);
                         drawerLayout.closeDrawers();
                         return true;
                     }
