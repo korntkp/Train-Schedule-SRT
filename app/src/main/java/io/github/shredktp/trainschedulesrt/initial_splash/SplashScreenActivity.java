@@ -146,12 +146,13 @@ public class SplashScreenActivity extends AppCompatActivity {
             addStationByArrayList(stationArrayList);
 //            addStationByArray(stations);
         } catch (Exception e) {
-//          // TODO: 14-Mar-17 Show parse error message & Link to srt
+            // TODO: 14-Mar-17 Show parse error message & Link to srt
         }
     }
 
     @NonNull
     private ArrayList<Station> stationExtractor(String html) {
+        // TODO: 15-Mar-17 Throw Exception if cannot parse html
         Document document = Jsoup.parse(html);
         Element body = document.body();
         Element divMainContent = body.child(0);

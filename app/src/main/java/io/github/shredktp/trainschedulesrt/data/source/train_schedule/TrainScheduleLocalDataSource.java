@@ -171,4 +171,18 @@ public class TrainScheduleLocalDataSource implements TrainScheduleDataSource {
         sqLiteDatabase.close();
         return result;
     }
+
+    @Override
+    public int deleteByStation(String startStation, String endStation) {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        String whereClause = TrainScheduleEntry.COLUMN_NAME_START_STATION + " LIKE ? AND "
+                + TrainScheduleEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+        String[] whereArgs = {startStation, endStation};
+
+        int result = sqLiteDatabase.delete(TrainScheduleEntry.TABLE_NAME, whereClause, whereArgs);
+
+        sqLiteDatabase.close();
+        return result;
+    }
 }

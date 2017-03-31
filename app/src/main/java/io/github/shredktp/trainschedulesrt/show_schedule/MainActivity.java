@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout linearLayoutTitlePair;
     private TextView tvTitleStartStation, tvTitleEndStation;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     private String startStation = "";
     private String endStation = "";
@@ -107,8 +108,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        Log.i(TAG, "setupSeeItFirst: " + pairStation.getStartStation());
+        Log.i(TAG, "setupSeeItFirst: " + pairStation.getEndStation());
+
         ArrayList<TrainSchedule> trainScheduleArrayList =
-                TrainScheduleLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                TrainScheduleLocalDataSource
+                        .getInstance(Contextor.getInstance().getContext())
                         .getTrainScheduleByStation(pairStation.getStartStation(), pairStation.getEndStation());
         setupScheduleResult(trainScheduleArrayList);
     }
@@ -127,11 +132,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Set up the navigation drawer.
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackground(R.color.colorPrimaryDark);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
             navigationView.getMenu().getItem(0).setChecked(true);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     private void setupView() {

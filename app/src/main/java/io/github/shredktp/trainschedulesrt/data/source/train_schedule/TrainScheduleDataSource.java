@@ -18,4 +18,5 @@ public interface TrainScheduleDataSource {
     ArrayList<TrainSchedule> getAllTrainSchedule();
 
     int deleteAll();
+    int deleteByStation(String startStation, String endStation);
 }

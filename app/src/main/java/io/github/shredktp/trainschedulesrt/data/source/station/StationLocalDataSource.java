@@ -38,8 +38,7 @@ public class StationLocalDataSource implements StationDataSource {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         String[] projection = {
-                StationEntry.COLUMN_NAME_NAME,
-                StationEntry.COLUMN_NAME_LINE
+                StationEntry.COLUMN_NAME_NAME
         };
 
         Cursor cursor = sqLiteDatabase.query(StationEntry.TABLE_NAME, projection, null, null, null,

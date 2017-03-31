@@ -25,6 +25,7 @@ import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 public class HistoryActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     private RecyclerView recyclerViewPairStation;
     private RecyclerView.Adapter adapterRecyclerView;
@@ -60,11 +61,17 @@ public class HistoryActivity extends AppCompatActivity {
         // Set up the navigation drawer.
         drawerLayout = (DrawerLayout) findViewById(R.id.history_drawer_layout);
         drawerLayout.setStatusBarBackground(R.color.colorAccent);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.history_nav_view);
+        navigationView = (NavigationView) findViewById(R.id.history_nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
             navigationView.getMenu().getItem(1).setChecked(true);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     private void setupView() {

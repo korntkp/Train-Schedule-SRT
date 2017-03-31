@@ -1,4 +1,4 @@
-package io.github.shredktp.trainschedulesrt.show_schedule;
+package io.github.shredktp.trainschedulesrt.unused;
 
 import android.content.Context;
 import android.view.LayoutInflater;

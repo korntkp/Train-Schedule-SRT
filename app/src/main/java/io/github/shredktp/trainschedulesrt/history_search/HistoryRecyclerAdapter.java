@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import io.github.shredktp.trainschedulesrt.R;
 import io.github.shredktp.trainschedulesrt.data.PairStation;
 import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
+import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainScheduleLocalDataSource;
 import io.github.shredktp.trainschedulesrt.offline_schedule.OfflineScheduleActivity;
 
 /**
@@ -32,14 +33,14 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStartStion;
-        TextView tvEndStion;
+        TextView tvStartStation;
+        TextView tvEndStation;
         ImageView imageViewDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvStartStion = (TextView) itemView.findViewById(R.id.tv_start_station);
-            tvEndStion = (TextView) itemView.findViewById(R.id.tv_end_station);
+            tvStartStation = (TextView) itemView.findViewById(R.id.tv_start_station);
+            tvEndStation = (TextView) itemView.findViewById(R.id.tv_end_station);
             imageViewDelete = (ImageView) itemView.findViewById(R.id.image_view_delete);
         }
     }
@@ -51,12 +52,12 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final String startStation = pairStationArrayList.get(position).getStartStation();
-        final String endStation = pairStationArrayList.get(position).getEndStation();
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final String startStation = pairStationArrayList.get(holder.getAdapterPosition()).getStartStation();
+        final String endStation = pairStationArrayList.get(holder.getAdapterPosition()).getEndStation();
 
-        holder.tvStartStion.setText(startStation);
-        holder.tvEndStion.setText(endStation);
+        holder.tvStartStation.setText(startStation);
+        holder.tvEndStation.setText(endStation);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,9 +72,11 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
             @Override
             public void onClick(View v) {
                 // TODO: 12-Mar-17 Show Dialog
-                pairStationArrayList.remove(position);
-                int result = PairStationLocalDataSource.getInstance(context).deleteByStation(startStation, endStation);
-                Log.d("Delete", "Delete: " + result);
+                pairStationArrayList.remove(holder.getAdapterPosition());
+                int deletePairStation = PairStationLocalDataSource.getInstance(context).deleteByStation(startStation, endStation);
+                int deleteTrainSchedule = TrainScheduleLocalDataSource.getInstance(context).deleteByStation(startStation, endStation);
+                Log.d("Delete", "deletePairStation: " + deletePairStation);
+                Log.d("Delete", "deleteTrainSchedule: " + deleteTrainSchedule);
                 notifyDataSetChanged();
             }
         });
