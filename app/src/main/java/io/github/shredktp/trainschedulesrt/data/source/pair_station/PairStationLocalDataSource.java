@@ -83,7 +83,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
-    public PairStation getSeeFirstPairStation() throws Exception {
+    public PairStation getSeeFirstPairStation() throws NullPointerException {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         String[] projection = {
@@ -106,7 +106,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
         if (countCursor == 0) {
             Log.w(TAG, "getSeeFirstPairStation: No item in PairStation Table");
-            throw new Exception("No item in PairStation Table");
+            throw new NullPointerException("No item in PairStation Table");
         }
 
         PairStation pairStationResult = new PairStation(
@@ -223,6 +223,7 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         return result;
     }
 
+    // TODO: 03-Apr-17 Change to update see it first NOT DELETE THAT ROW 
     @Override
     public int deleteSeeItFirstPairStation() {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();

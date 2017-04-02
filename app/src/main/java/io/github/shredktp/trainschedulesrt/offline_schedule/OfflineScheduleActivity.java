@@ -1,18 +1,25 @@
 package io.github.shredktp.trainschedulesrt.offline_schedule;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.github.shredktp.trainschedulesrt.Contextor;
 import io.github.shredktp.trainschedulesrt.R;
+import io.github.shredktp.trainschedulesrt.data.PairStation;
 import io.github.shredktp.trainschedulesrt.data.TrainSchedule;
+import io.github.shredktp.trainschedulesrt.data.source.pair_station.PairStationLocalDataSource;
 import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainScheduleLocalDataSource;
 import io.github.shredktp.trainschedulesrt.show_schedule.ScheduleRecyclerViewAdapter;
 
@@ -21,6 +28,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     private static final String TOOLBAR_TITLE = "Train Schedule";
     private static final String EXTRA_START_STATION = "startStation";
     private static final String EXTRA_END_STATION = "endStation";
+    private static final String TAG = "OfflineAct";
 
     private Toolbar toolbar;
 
@@ -33,18 +41,24 @@ public class OfflineScheduleActivity extends AppCompatActivity {
 
     private ArrayList<TrainSchedule> trainScheduleArrayList;
 
+    MenuItem menuItemBookmark, menuItemBookmarked;
+    private boolean isBookmarked;
+    private String startStation = "";
+    private String endStation = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline_schedule);
 
-        String startStation = getIntent().getStringExtra(EXTRA_START_STATION);
-        String endStation = getIntent().getStringExtra(EXTRA_END_STATION);
+        startStation = getIntent().getStringExtra(EXTRA_START_STATION);
+        endStation = getIntent().getStringExtra(EXTRA_END_STATION);
 
         setupView(startStation, endStation);
         setupToolbar();
         setupData(startStation, endStation);
-        setupListView();
+        setupRecyclerView();
+        isBookmarked = isSeeItFirstStation(startStation, endStation);
     }
 
     private void setupView(String startStation, String endStation) {
@@ -61,7 +75,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
         toolbar.setTitle(TOOLBAR_TITLE);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -71,7 +85,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
         trainScheduleArrayList = TrainScheduleLocalDataSource.getInstance(getApplicationContext()).getTrainScheduleByStation(startStation, endStation);
     }
 
-    private void setupListView() {
+    private void setupRecyclerView() {
         layoutManagerRecyclerView = new LinearLayoutManager(this);
         recyclerViewOfflineSchedule.setLayoutManager(layoutManagerRecyclerView);
         mDividerItemDecoration = new DividerItemDecoration(recyclerViewOfflineSchedule.getContext(), DividerItemDecoration.VERTICAL);
@@ -79,5 +93,68 @@ public class OfflineScheduleActivity extends AppCompatActivity {
 
         adapterRecyclerView = new ScheduleRecyclerViewAdapter(trainScheduleArrayList);
         recyclerViewOfflineSchedule.setAdapter(adapterRecyclerView);
+    }
+
+    private boolean isSeeItFirstStation(String startStation, String endStation) {
+        PairStation pairStation;
+        try {
+            pairStation = PairStationLocalDataSource
+                    .getInstance(Contextor.getInstance().getContext()).getSeeFirstPairStation();
+        } catch (NullPointerException e) {
+            Log.i(TAG, "isSeeItFirstStation: No Star Station");
+            return false;
+        }
+
+        Log.i(TAG, "getSeeFirstPairStation Start: " + pairStation.getStartStation());
+        Log.i(TAG, "getSeeFirstPairStation End: " + pairStation.getEndStation());
+
+        return startStation.equals(pairStation.getStartStation()) && endStation.equals(pairStation.getEndStation());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.see_schedule_toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_bookmark: {
+                PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
+                long result = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .updateSeeItFirst(pairStation);
+                Snackbar.make(getWindow().getDecorView(), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                item.setVisible(false);
+                menuItemBookmarked.setVisible(true);
+                return true;
+            }
+            case R.id.action_bookmarked: {
+                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .deleteSeeItFirstPairStation();
+                Snackbar.make(getWindow().getDecorView(), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
+                item.setVisible(false);
+                menuItemBookmark.setVisible(true);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.i(TAG, "onPrepareOptionsMenu: Start");
+        menuItemBookmark = menu.findItem(R.id.action_bookmark);
+        menuItemBookmarked = menu.findItem(R.id.action_bookmarked);
+
+        if (isBookmarked) {
+            menuItemBookmark.setVisible(false);
+            menuItemBookmarked.setVisible(true);
+        } else {
+            menuItemBookmarked.setVisible(false);
+            menuItemBookmark.setVisible(true);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 }

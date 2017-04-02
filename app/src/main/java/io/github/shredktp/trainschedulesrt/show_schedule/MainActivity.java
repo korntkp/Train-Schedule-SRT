@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             pairStation = PairStationLocalDataSource
                     .getInstance(Contextor.getInstance().getContext()).getSeeFirstPairStation();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             Log.i(TAG, "setupSeeItFirst: No Star Station");
             return;
         }

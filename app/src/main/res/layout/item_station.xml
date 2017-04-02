@@ -11,13 +11,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Name: " />
+        android:text="@string/item_station_name" />
 
     <TextView
         android:id="@+id/tv_line_station"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Line: " />
+        android:text="@string/item_station_line" />
 
 </LinearLayout>

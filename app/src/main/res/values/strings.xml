@@ -14,4 +14,17 @@
     <string name="bookmark">Bookmark</string>
     <string name="bookmarked">Bookmarked</string>
     <string name="image_view_delete">delete</string>
+
+    <string name="main_tv_start_station">Start</string>
+    <string name="main_tv_end_station">End</string>
+    <string name="main_tv_detail_default">Select station and see schedule Press star button to see that schedule first</string>
+    <string name="offline_tv_start_station">Start</string>
+    <string name="offline_tv_end_station">End</string>
+    <string name="item_schedule_number">Number:</string>
+    <string name="item_schedule_type">Type:</string>
+    <string name="item_schedule_start">Start:</string>
+    <string name="item_schedule_end">End:</string>
+    <string name="item_station_name">Name:</string>
+    <string name="item_station_line">Line:</string>
+    <string name="nav_header_logo_desc">Logo</string>
 </resources>

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="Start" />
+            android:text="@string/offline_tv_start_station" />
 
         <TextView
             android:id="@+id/tv_title_end_station"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="End" />
+            android:text="@string/offline_tv_end_station" />
 
     </LinearLayout>
 

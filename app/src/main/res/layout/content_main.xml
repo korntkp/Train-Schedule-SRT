@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="Start" />
+            android:text="@string/main_tv_start_station" />
 
         <TextView
             android:id="@+id/tv_title_end_station"
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="End" />
+            android:text="@string/main_tv_end_station" />
 
     </LinearLayout>
 
@@ -91,7 +91,7 @@
             android:id="@+id/tv_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select station and see schedule\nPress star button to see that schedule first"
+            android:text="@string/main_tv_detail_default"
             android:textAlignment="center" />
 
     </LinearLayout>
