@@ -12,7 +12,8 @@ public interface PairStationDataSource {
 
     long add(PairStation pairStation);
 
-    long updateSeeItFirst(PairStation pairStation);
+    long clearThenUpdateSeeItFirst(PairStation pairStation);
+    int updateSeeItFirst(String startStation, String endStation, int isSeeItFirst);
 
     PairStation getSeeFirstPairStation() throws Exception;
     ArrayList<PairStation> getAllPairStation();
@@ -20,5 +21,4 @@ public interface PairStationDataSource {
 
     int deleteAll();
     int deleteByStation(String startStation, String endStation);
-    int deleteSeeItFirstPairStation();
 }

@@ -52,12 +52,12 @@ public class PairStationLocalDataSource implements PairStationDataSource {
     }
 
     @Override
-    public long updateSeeItFirst(PairStation pairStation) {
+    public long clearThenUpdateSeeItFirst(PairStation pairStation) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
         long clearSeeItFirstResult = clearSeeItFirst(sqLiteDatabase);
-//        long clearSeeItFirstResult = deleteSeeItFirstPairStation();
-        Log.d(TAG, "updateSeeItFirst clearSeeItFirstResult: " + clearSeeItFirstResult);
+//        long clearSeeItFirstResult = updateSeeItFirst();
+        Log.d(TAG, "clearThenUpdateSeeItFirst clearSeeItFirstResult: " + clearSeeItFirstResult);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, pairStation.isSeeItFirst());
@@ -80,6 +80,26 @@ public class PairStationLocalDataSource implements PairStationDataSource {
         String[] whereArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
 
         return sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereCause, whereArgs);
+    }
+
+    @Override
+    public int updateSeeItFirst(String startStation, String endStation, int isSeeItFirst) {
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
+        Log.i(TAG, "updateSeeItFirst: ");
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PairStationEntry.COLUMN_NAME_IS_FIRST, isSeeItFirst);
+
+        String whereClause = PairStationEntry.COLUMN_NAME_START_STATION + " LIKE ?" +
+                " AND " + PairStationEntry.COLUMN_NAME_END_STATION + " LIKE ?";
+        String[] whereArgs = {startStation, endStation};
+
+//        String whereClause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
+//        String[] whereArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
+
+        int result = sqLiteDatabase.update(PairStationEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
+        sqLiteDatabase.close();
+        return result;
     }
 
     @Override
@@ -219,20 +239,6 @@ public class PairStationLocalDataSource implements PairStationDataSource {
 
         int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, whereClause, whereArgs);
 
-        sqLiteDatabase.close();
-        return result;
-    }
-
-    // TODO: 03-Apr-17 Change to update see it first NOT DELETE THAT ROW 
-    @Override
-    public int deleteSeeItFirstPairStation() {
-        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
-        Log.i(TAG, "deleteSeeItFirstPairStation: ");
-
-        String whereClause = PairStationEntry.COLUMN_NAME_IS_FIRST + " LIKE ?";
-        String[] whereArgs = {String.valueOf(IS_IT_FIRST_TRUE)};
-
-        int result = sqLiteDatabase.delete(PairStationEntry.TABLE_NAME, whereClause, whereArgs);
         sqLiteDatabase.close();
         return result;
     }

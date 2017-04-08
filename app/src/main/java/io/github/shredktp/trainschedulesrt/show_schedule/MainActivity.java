@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private IdlingResourceImpl idlingResource;
 
     MenuItem menuItemBookmark, menuItemBookmarked;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
         linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
+        progressBar = (ProgressBar) findViewById(R.id.main_progress);
 
         btnSeeSchedule.setOnClickListener(this);
         btnSelectStartStation.setOnClickListener(this);
@@ -190,6 +194,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void trainScheduleApiRequester(final String startStation, final String endStation) {
+        if (progressBar.getVisibility() == View.GONE) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        btnSeeSchedule.setEnabled(false);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_SRT_CHECK_TIME)
                 .addConverterFactory(new ToStringConverterFactory())
@@ -224,6 +233,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onResponse not successful: " + response.body());
                     Log.d(TAG, "onResponse not successful: " + response.errorBody());
                 }
+
+                if (progressBar.getVisibility() == View.VISIBLE) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                btnSeeSchedule.setEnabled(true);
+
                 if (idlingResource != null) {
                     idlingResource.setIdleState(true);
                 }
@@ -238,6 +253,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // TODO: 27-Feb-17 Case 2) No internet connection -> Display Button Try Again
 
                 setupNoScheduleResult();
+
+                if (progressBar.getVisibility() == View.VISIBLE) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                btnSeeSchedule.setEnabled(true);
+
                 if (idlingResource != null) {
                     idlingResource.setIdleState(true);
                 }
@@ -376,17 +397,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.action_bookmark: {
                 PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
-                long result = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                        .updateSeeItFirst(pairStation);
-                Snackbar.make(getWindow().getDecorView(), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .clearThenUpdateSeeItFirst(pairStation);
+                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmarked.setVisible(true);
                 return true;
             }
             case R.id.action_bookmarked: {
                 PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                        .deleteSeeItFirstPairStation();
-                Snackbar.make(getWindow().getDecorView(), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
+                        .updateSeeItFirst(startStation, endStation, 0);
+                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmark.setVisible(true);
                 return true;

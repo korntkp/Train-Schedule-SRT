@@ -122,17 +122,18 @@ public class OfflineScheduleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_bookmark: {
                 PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
-                long result = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                        .updateSeeItFirst(pairStation);
-                Snackbar.make(getWindow().getDecorView(), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
+                        .clearThenUpdateSeeItFirst(pairStation);
+                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmarked.setVisible(true);
                 return true;
             }
             case R.id.action_bookmarked: {
+                // TODO: 04-Apr-17 Update See it first DataSource
                 PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
-                        .deleteSeeItFirstPairStation();
-                Snackbar.make(getWindow().getDecorView(), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
+                        .updateSeeItFirst(startStation, endStation, 0);
+                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmark.setVisible(true);
                 return true;
