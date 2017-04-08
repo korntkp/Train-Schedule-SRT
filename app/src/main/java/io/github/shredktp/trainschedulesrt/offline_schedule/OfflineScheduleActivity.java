@@ -1,6 +1,7 @@
 package io.github.shredktp.trainschedulesrt.offline_schedule;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
     private static final String TAG = "OfflineAct";
 
     private Toolbar toolbar;
+    private CoordinatorLayout coordinatorLayout;
 
     private RecyclerView recyclerViewOfflineSchedule;
     private RecyclerView.Adapter adapterRecyclerView;
@@ -63,6 +65,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
 
     private void setupView(String startStation, String endStation) {
         toolbar = (Toolbar) findViewById(R.id.offline_schedule_toolbar);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.offline_coordinator);
         tvTitleStartStation = (TextView) findViewById(R.id.tv_title_start_station);
         tvTitleEndStation = (TextView) findViewById(R.id.tv_title_end_station);
         recyclerViewOfflineSchedule = (RecyclerView) findViewById(R.id.recycler_view_offline_schedule);
@@ -124,7 +127,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
                 PairStation pairStation = new PairStation(startStation, endStation, 0, 1, 0);
                 PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                         .clearThenUpdateSeeItFirst(pairStation);
-                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "This schedule is bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmarked.setVisible(true);
                 return true;
@@ -133,7 +136,7 @@ public class OfflineScheduleActivity extends AppCompatActivity {
                 // TODO: 04-Apr-17 Update See it first DataSource
                 PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext())
                         .updateSeeItFirst(startStation, endStation, 0);
-                Snackbar.make(findViewById(R.id.main_coordinator), "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "This schedule is removed from bookmarked", Snackbar.LENGTH_SHORT).show();
                 item.setVisible(false);
                 menuItemBookmark.setVisible(true);
                 return true;
