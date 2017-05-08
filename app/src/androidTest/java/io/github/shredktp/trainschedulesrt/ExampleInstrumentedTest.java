@@ -33,8 +33,16 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
+    private static final int RECYCLER_START_STATION_POSITION_BKK = 0;
+    private static final int RECYCLER_END_STATION_POSITION_KRA_BIAT = 1;
+
+    private static final int RECYCLER_START_STATION_POSITION_KUD_JIK = 13;
+    private static final int RECYCLER_END_STATION_POSITION_KUM_PWA_PEE = 14;
+
     private static final String EXPECTED_START_STATION_BKK = "กรุงเทพ";
     private static final String EXPECTED_START_STATION_KRA_BIAT = "กระเบียด";
+    private static final String EXPECTED_START_STATION_KUD_JIK = "กุดจิก";
+    private static final String EXPECTED_END_STATION_KUM_PWA_PEE = "กุมภวาปี";
 
     private Context appContext;
     private IdlingResource idlingResource;
@@ -72,10 +80,10 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.select_station_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.select_station_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(RECYCLER_START_STATION_POSITION_KUD_JIK, click()));
 
         onView(withId(R.id.btn_select_start_station))
-                .check(matches(withText(EXPECTED_START_STATION_BKK)));
+                .check(matches(withText(EXPECTED_START_STATION_KUD_JIK)));
     }
 
     @Test
@@ -84,10 +92,10 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.select_station_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.select_station_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(RECYCLER_END_STATION_POSITION_KUM_PWA_PEE, click()));
 
         onView(withId(R.id.btn_select_end_station))
-                .check(matches(withText(EXPECTED_START_STATION_KRA_BIAT)));
+                .check(matches(withText(EXPECTED_END_STATION_KUM_PWA_PEE)));
     }
 
     @Test
@@ -96,7 +104,7 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.select_station_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.select_station_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(RECYCLER_START_STATION_POSITION_BKK, click()));
 
         onView(withId(R.id.btn_select_start_station))
                 .check(matches(withText(EXPECTED_START_STATION_BKK)));
@@ -106,7 +114,7 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.select_station_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.select_station_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(RECYCLER_END_STATION_POSITION_KRA_BIAT, click()));
 
         onView(withId(R.id.btn_select_end_station))
                 .check(matches(withText(EXPECTED_START_STATION_KRA_BIAT)));
@@ -115,7 +123,7 @@ public class ExampleInstrumentedTest {
 
         if (ConnectionUtil.isConnected(appContext)) {
             onView(withId(R.id.recycler_view_schedule)).check(matches(isDisplayed()));
-            onView(withId(R.menu.see_schedule_toolbar_menu)).check(matches(isDisplayed()));
+//            onView(withId(R.menu.see_schedule_toolbar_menu)).check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.layout_detail)).check(matches(isDisplayed()));
             onView(withId(R.id.tv_detail)).check(matches(isDisplayed()));
