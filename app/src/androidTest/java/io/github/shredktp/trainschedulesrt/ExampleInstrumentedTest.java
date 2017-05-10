@@ -126,7 +126,7 @@ public class ExampleInstrumentedTest {
 //            onView(withId(R.menu.see_schedule_toolbar_menu)).check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.layout_detail)).check(matches(isDisplayed()));
-            onView(withId(R.id.tv_detail)).check(matches(isDisplayed()));
+            onView(withId(R.id.tv_detail_see_schedule)).check(matches(isDisplayed()));
         }
     }
 

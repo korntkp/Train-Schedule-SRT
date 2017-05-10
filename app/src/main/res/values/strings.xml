@@ -17,7 +17,8 @@
 
     <string name="main_tv_start_station">Start</string>
     <string name="main_tv_end_station">End</string>
-    <string name="main_tv_detail_default">Select station and see schedule Press star button to see that schedule first</string>
+    <string name="main_tv_detail_default">Select Start station and End station \nthen see schedule</string>
+    <string name="main_tv_bookmark">Press bookmark button to set \nthat schedule as a default</string>
     <string name="main_no_schedule">Not found !!! between the origin and destination station with your choice.</string>
 
     <string name="offline_tv_start_station">Start</string>
@@ -33,4 +34,5 @@
 
     <string name="web_railway_main">http://www.railway.co.th</string>
     <string name="web_railway_check_time">http://www.railway.co.th/checktime/checktime.asp?lenguage=Eng</string>
+    <string name="history_tv_no_item">No history</string>
 </resources>

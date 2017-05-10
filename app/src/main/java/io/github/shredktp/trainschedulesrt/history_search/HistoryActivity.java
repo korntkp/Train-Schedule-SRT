@@ -13,6 +13,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -24,6 +26,9 @@ import io.github.shredktp.trainschedulesrt.show_schedule.MainActivity;
 
 public class HistoryActivity extends AppCompatActivity {
 
+    private static final String TAG = "HistoryAct";
+
+    private TextView tvNoHistory;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -43,7 +48,11 @@ public class HistoryActivity extends AppCompatActivity {
         setupView();
 
         pairStationArrayList = PairStationLocalDataSource.getInstance(Contextor.getInstance().getContext()).getAllPairStation();
-        setupRecyclerView(pairStationArrayList);
+        if (pairStationArrayList.isEmpty()) {
+            tvNoHistory.setVisibility(View.VISIBLE);
+        } else {
+            setupRecyclerView(pairStationArrayList);
+        }
     }
 
     private void setupToolbar() {
@@ -76,6 +85,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void setupView() {
         recyclerViewPairStation = (RecyclerView) findViewById(R.id.recycler_view_history);
+        tvNoHistory = (TextView) findViewById(R.id.tv_history_no_item);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

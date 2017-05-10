@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView.LayoutManager layoutManagerRecyclerView;
     private DividerItemDecoration mDividerItemDecoration;
 
-    private LinearLayout linearLayoutDetail;
+    private RelativeLayout layoutDetail;
     private TextView tvDetail;
     private LinearLayout linearLayoutTitlePair;
     private TextView tvTitleStartStation, tvTitleEndStation;
@@ -155,13 +156,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSeeSchedule = (Button) findViewById(btn_see_schedule);
         btnSelectStartStation = (Button) findViewById(btn_select_start_station);
         btnSelectEndStation = (Button) findViewById(btn_select_end_station);
-        tvDetail = (TextView) findViewById(R.id.tv_detail);
+        tvDetail = (TextView) findViewById(R.id.tv_detail_see_schedule);
         linearLayoutTitlePair = (LinearLayout) findViewById(R.id.layout_title_pair);
         tvTitleStartStation = (TextView) findViewById(R.id.tv_title_start_station);
         tvTitleEndStation = (TextView) findViewById(R.id.tv_title_end_station);
 
         recyclerViewSchedule = (RecyclerView) findViewById(R.id.recycler_view_schedule);
-        linearLayoutDetail = (LinearLayout) findViewById(R.id.layout_detail);
+        layoutDetail = (RelativeLayout) findViewById(R.id.layout_detail);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
 
         btnSeeSchedule.setOnClickListener(this);
@@ -288,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTitleStartStation.setText(trainScheduleArrayList.get(0).getStartStation());
         tvTitleEndStation.setText(trainScheduleArrayList.get(0).getEndStation());
 
-        linearLayoutDetail.setVisibility(View.GONE);
+        layoutDetail.setVisibility(View.GONE);
         recyclerViewSchedule.setVisibility(View.VISIBLE);
 
 //        ScheduleListViewAdapter scheduleListViewAdapter =
@@ -312,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTitleEndStation.setText("");
 
         recyclerViewSchedule.setVisibility(View.GONE);
-        linearLayoutDetail.setVisibility(View.VISIBLE);
+        layoutDetail.setVisibility(View.VISIBLE);
         tvDetail.setText(NO_SCHEDULE);
         Toast.makeText(MainActivity.this, "Phasing HTML Error", Toast.LENGTH_SHORT).show();
     }

@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_mai">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,6 +41,7 @@
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
             android:layout_weight="2"
+            android:minLines="2"
             android:text="@string/btn_main_see_schedule" />
     </LinearLayout>
 
@@ -59,7 +60,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="@string/main_tv_start_station" />
+            android:text="@string/main_tv_start_station"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_title_end_station"
@@ -67,7 +70,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="@string/main_tv_end_station" />
+            android:text="@string/main_tv_end_station"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -77,27 +82,51 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_detail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@android:color/holo_blue_light"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:gravity="center">
 
         <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:alpha="0.65"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_train_1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu" />
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
 
-        <TextView
-        android:id="@+id/tv_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/main_tv_detail_default"
-        android:textAlignment="center" />
+            <TextView
+                android:id="@+id/tv_detail_see_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/main_tv_detail_default"
+                android:textAlignment="center"
+                android:textColor="@android:color/white" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tv_detail_bookmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_tv_bookmark"
+                android:textAlignment="center"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>
