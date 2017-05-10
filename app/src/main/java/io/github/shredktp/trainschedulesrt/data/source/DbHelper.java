@@ -14,7 +14,7 @@ import io.github.shredktp.trainschedulesrt.data.source.train_schedule.TrainSched
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "srtDb.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 1;
 
     public DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
