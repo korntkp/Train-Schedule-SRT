@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "io.github.shredktp.trainschedulesrt"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "0.80"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -21,31 +21,31 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    // Dependencies for Firebase
+    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-crash:10.0.1'
     compile 'com.github.claudiodegio:MsvSearch:1.1.0'
     compile 'org.jsoup:jsoup:1.10.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-
     // Dependencies for local unit tests
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:2.7.11"
+    testCompile 'org.mockito:mockito-core:2.7.11'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
-    testCompile "org.robolectric:robolectric:3.3.2"
-
+    testCompile 'org.robolectric:robolectric:3.3.2'
     // Dependencies for Android unit tests
-    androidTestCompile "junit:junit:4.12"
-    androidTestCompile "org.mockito:mockito-core:2.7.11"
-
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.mockito:mockito-core:2.7.11'
     // Espresso UI Testing
     compile 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
     androidTestCompile 'com.android.support.test:runner:0.5'
@@ -53,11 +53,12 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-
     // Resolve conflicts between main and test APK:
-    androidTestCompile 'com.android.support:support-annotations:25.1.0'
-    androidTestCompile 'com.android.support:support-v4:25.1.0'
-    androidTestCompile 'com.android.support:recyclerview-v7:25.1.0'
-    androidTestCompile 'com.android.support:appcompat-v7:25.1.0'
-    androidTestCompile 'com.android.support:design:25.1.0'
+    androidTestCompile 'com.android.support:support-annotations:26.1.0'
+    androidTestCompile 'com.android.support:support-v4:26.1.0'
+    androidTestCompile 'com.android.support:recyclerview-v7:26.1.0'
+    androidTestCompile 'com.android.support:appcompat-v7:26.1.0'
+    androidTestCompile 'com.android.support:design:26.1.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
